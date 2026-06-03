@@ -117,6 +117,16 @@
     .main-grid  { grid-template-columns:1fr; }
     .stats-row  { grid-template-columns:repeat(2,1fr); }
   }
+
+  /* Student list */
+  .student-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .student-table th { text-align:left; padding:7px 10px; font-size:11px; font-weight:700; color:#999; text-transform:uppercase; letter-spacing:.5px; border-bottom:2px solid #f0f2f8; }
+  .student-table td { padding:9px 10px; border-bottom:1px solid #f5f7fa; }
+  .student-table tr:last-child td { border-bottom:none; }
+  .student-table tr:hover td { background:#f8f9fb; }
+  .s-num { color:#aaa; font-weight:700; width:30px; }
+  .s-name { font-weight:700; }
+  .s-parent { color:#777; }
 </style>
 </head>
 <body>
@@ -247,6 +257,12 @@
       <div id="classChips" class="class-chips"></div>
     </div>
 
+    <div class="card" id="studentListCard" style="margin-top:18px;display:none;">
+      <h2 id="studentListTitle">O'quvchilar ro'yxati</h2>
+      <div class="subtitle" id="studentListSubtitle"></div>
+      <div id="studentListBody"></div>
+    </div>
+
   </div><!-- /mainContent -->
 
   <div id="loadingEl" class="loading-overlay">
@@ -347,7 +363,9 @@ async function loadData() {
       if (isNaN(sinf)) continue;
       if (isCancelled(izoh)) continue;
 
-      allStudents.push({ filial, til, sinf });
+      const ism     = r[2] || '—';
+      const otaOna  = r[1] || '—';
+      allStudents.push({ filial, til, sinf, ism, otaOna });
     }
 
     document.getElementById('loadingEl').style.display = 'none';
@@ -430,6 +448,7 @@ function update() {
   renderClassroom(filial, sinf, til, enrolled);
   renderFilialTable(sinf, til);
   renderChips(filial, sinf, til);
+  renderStudentList(filial, sinf, til);
 }
 
 function renderClassroom(filial, sinf, til, enrolled) {
@@ -538,6 +557,42 @@ function renderChips(filialF, sinfF, tilF) {
     const overflow2 = c.count > cap2 ? ` ⚠️+${c.count-cap2}` : '';
     return `<div class="chip ${cls}" onclick="selectCombo('${c.filial}','${c.sinf}','${c.til}')">${c.filial} · ${c.sinf}-sinf · ${c.til==="O'zb"?"O'zb":"Rus"} — ${c.count}/${cap2}${overflow2}</div>`;
   }).join('');
+}
+
+function renderStudentList(filial, sinf, til) {
+  const card     = document.getElementById('studentListCard');
+  const titleEl  = document.getElementById('studentListTitle');
+  const subEl    = document.getElementById('studentListSubtitle');
+  const bodyEl   = document.getElementById('studentListBody');
+
+  if (!filial || !sinf || !til) {
+    card.style.display = 'none';
+    return;
+  }
+
+  const students = getFiltered(filial, sinf, til);
+  card.style.display = 'block';
+  const tilLabel = til === "O'zb" ? "O'zbek" : "Rus";
+  titleEl.textContent = `${filial} · ${sinf}-sinf · ${tilLabel} tili — O'quvchilar ro'yxati`;
+  subEl.textContent   = `Jami ${students.length} ta o'quvchi`;
+
+  if (!students.length) {
+    bodyEl.innerHTML = '<div class="no-data">Hech qanday o\'quvchi topilmadi</div>';
+    return;
+  }
+
+  let rows = students.map((s, i) => `
+    <tr>
+      <td class="s-num">${i + 1}</td>
+      <td class="s-name">${s.ism}</td>
+      <td class="s-parent">${s.otaOna}</td>
+    </tr>`).join('');
+
+  bodyEl.innerHTML = `
+    <table class="student-table">
+      <thead><tr><th>#</th><th>Ism</th><th>Ota-ona ismi</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
 }
 
 function selectCombo(filial, sinf, til) {
