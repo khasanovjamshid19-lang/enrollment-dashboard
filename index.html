@@ -417,11 +417,9 @@ function update() {
 
   document.getElementById('valEnrolled').textContent = enrolled;
   document.getElementById('valFree').textContent     = free;
-  document.getElementById('valTotal').textContent    = capacity;
   document.getElementById('valFill').textContent     = pct + '%';
   document.getElementById('subEnrolled').textContent = `${pct}% band`;
   document.getElementById('subFree').textContent     = `${100-pct}% bo'sh`;
-  document.getElementById('subTotal').textContent    = `${Object.keys(FILIAL_CAPACITY).length} filial`;
   document.getElementById('subFill').textContent     = pct>=80?'🔴 Deyarli to\'ldi':pct>=50?'🟡 Yarim to\'lgan':'🟢 Ochiq';
 
   updChart(charts.enrolled, enrolled, capacity);
