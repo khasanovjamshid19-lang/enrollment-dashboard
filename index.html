@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>O'quvchilar Dashboard</title>
+<title>O'quvchilar Dashboard · 2026-2027</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
 <style>
   :root { color-scheme: light; }
@@ -18,31 +18,28 @@
   .reload-btn.spinning span { display: inline-block; animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Info banner */
   .info-banner { background: #fffbeb; border: 1.5px solid #fcd34d; border-radius: 10px; padding: 10px 16px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #78350f; }
   .info-banner strong { font-weight: 700; }
 
   .container { padding: 20px 24px; max-width: 1100px; margin: 0 auto; }
 
-  /* Loading/error */
   .loading-overlay { text-align: center; padding: 60px; color: #888; }
   .loading-overlay .spinner { width: 36px; height: 36px; border: 3px solid #e0e4ef; border-top-color: #4361ee; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
   .error-box { background: #fff0f0; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 16px 20px; color: #c62828; font-size: 14px; margin: 20px 0; }
 
-  /* Filters */
   .filters { background: white; border-radius: 14px; padding: 14px 20px; margin-bottom: 18px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
   .filter-group { display: flex; flex-direction: column; gap: 4px; }
   .filter-group label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.6px; }
   .filter-group select { border: 1.5px solid #e0e4ef; border-radius: 8px; padding: 7px 12px; font-size: 14px; background: #f8f9fb; color: #1a1a2e; cursor: pointer; outline: none; min-width: 140px; }
   .filter-group select:focus { border-color: #4361ee; }
 
-  /* Stats row */
-  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
   .stat-card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; overflow: hidden; }
   .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; border-radius:16px 16px 0 0; }
   .card-enrolled::before { background: linear-gradient(90deg,#4361ee,#7b8cff); }
   .card-free::before    { background: linear-gradient(90deg,#06d6a0,#00b894); }
-  .card-total::before   { background: linear-gradient(90deg,#a29bfe,#6c5ce7); }
+  .card-yangi::before   { background: linear-gradient(90deg,#06b6d4,#0891b2); }
+  .card-eski::before    { background: linear-gradient(90deg,#a29bfe,#6c5ce7); }
   .card-fill::before    { background: linear-gradient(90deg,#f77f00,#fcbf49); }
   .stat-chart-wrap { position:relative; width:90px; height:90px; }
   .stat-chart-wrap canvas { width:90px !important; height:90px !important; }
@@ -52,16 +49,11 @@
   .stat-label { font-size:11px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.5px; text-align:center; }
   .stat-sub   { font-size:11px; color:#aaa; text-align:center; }
 
-  /* Cancelled badge */
-  .cancelled-info { background: #fff0f0; border: 1px solid #fca5a5; border-radius: 8px; padding: 8px 14px; font-size: 12px; color: #c62828; display: flex; align-items: center; gap: 8px; margin-left: auto; }
-
-  /* Main grid */
   .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   .card { background: white; border-radius: 14px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
   .card h2 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
   .card .subtitle { font-size: 12px; color: #999; margin-bottom: 14px; }
 
-  /* Classroom */
   .classroom-info { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
   .ci-badge  { padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
   .ci-enrolled { background:#fee; color:#e03; }
@@ -80,7 +72,6 @@
   .leg-occ   { background:#e03060; }
   .leg-free  { background:#06d6a0; }
 
-  /* Filial table */
   .filial-table { width:100%; border-collapse:collapse; font-size:13px; }
   .filial-table th { text-align:left; padding:7px 10px; font-size:11px; font-weight:700; color:#999; text-transform:uppercase; letter-spacing:.5px; border-bottom:2px solid #f0f2f8; }
   .filial-table td { padding:9px 10px; border-bottom:1px solid #f5f7fa; }
@@ -92,7 +83,6 @@
   .badge-full { background:#fee; color:#c62828; }
   .badge-open { background:#e6faf5; color:#1b7a5e; }
 
-  /* Chips */
   .class-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
   .chip { padding:4px 11px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; border:1.5px solid transparent; transition:all .15s; }
   .chip-full    { background:#fee;     color:#c62828; border-color:#fca5a5; }
@@ -103,20 +93,13 @@
   .no-data { text-align:center; padding:36px; color:#ccc; font-size:13px; }
   .overflow-box { background:linear-gradient(135deg,#fff0f0,#ffe4e4); border:2px solid #f87171; border-radius:12px; padding:14px 18px; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
   .overflow-box .ov-icon { font-size:24px; }
-  .overflow-box .ov-text { }
   .overflow-box .ov-big  { font-size:18px; font-weight:800; color:#c62828; }
   .overflow-box .ov-sub  { font-size:12px; color:#991b1b; margin-top:2px; }
-  .cap-selector { display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
-  .cap-selector label { font-size:12px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.5px; }
-  .cap-btn { padding:5px 12px; border-radius:20px; border:1.5px solid #e0e4ef; background:#f8f9fb; font-size:12px; font-weight:600; cursor:pointer; color:#555; transition:all .15s; }
-  .cap-btn.active { background:#4361ee; border-color:#4361ee; color:white; }
-  .cap-custom { border:1.5px solid #e0e4ef; border-radius:8px; padding:4px 8px; font-size:13px; width:60px; text-align:center; outline:none; }
-  .cap-custom:focus { border-color:#4361ee; }
 
-  @media(max-width:700px){
-    .main-grid  { grid-template-columns:1fr; }
-    .stats-row  { grid-template-columns:repeat(2,1fr); }
-  }
+  /* Holat badges */
+  .holat-yangi { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#dcfce7; color:#166534; }
+  .holat-eski  { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#dbeafe; color:#1e40af; }
+  .holat-unknown { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#f3f4f6; color:#6b7280; }
 
   /* Student list */
   .student-table { width:100%; border-collapse:collapse; font-size:13px; }
@@ -126,7 +109,11 @@
   .student-table tr:hover td { background:#f8f9fb; }
   .s-num { color:#aaa; font-weight:700; width:30px; }
   .s-name { font-weight:700; }
-  .s-parent { color:#777; }
+
+  @media(max-width:700px){
+    .main-grid  { grid-template-columns:1fr; }
+    .stats-row  { grid-template-columns:repeat(2,1fr); }
+  }
 </style>
 </head>
 <body>
@@ -134,7 +121,7 @@
 <div class="header">
   <div class="header-left">
     <h1>🏫 O'quvchilar Enrollment Dashboard</h1>
-    <p>Kim/Bio yo'nalishi · Live · Oxirgi yangilanish: <span id="lastUpdate">—</span></p>
+    <p>2026-2027 o'quv yili · 4 filial · Live · Oxirgi yangilanish: <span id="lastUpdate">—</span></p>
   </div>
   <button class="reload-btn" onclick="loadData()" id="reloadBtn">
     <span>↻</span> Yangilash
@@ -144,9 +131,8 @@
 <div class="container">
   <div id="mainContent" style="display:none">
 
-    <!-- Info banner -->
     <div class="info-banner">
-      💡 <div><strong>Bekor qilish tizimi:</strong> Google Sheetsda o'quvchi o'qimaydi bo'lsa, <strong>Izoh</strong> ustuniga <code style="background:#fef3c7;padding:1px 5px;border-radius:4px">bekor</code> so'zini yozing — dashboard avtomatik chiqarib tashlaydi.</div>
+      💡 <div><strong>Bekor qilish tizimi:</strong> O'quvchi o'qimaydi bo'lsa, <strong>Izoh</strong> ustuniga <code style="background:#fef3c7;padding:1px 5px;border-radius:4px">bekor</code> so'zini yozing — dashboard avtomatik chiqarib tashlaydi.</div>
     </div>
 
     <!-- Filters -->
@@ -155,9 +141,9 @@
         <label>Filial</label>
         <select id="filialFilter" onchange="update()">
           <option value="">Barcha filiallar</option>
-          <option value="Minor">Minor</option>
-          <option value="Drujba">Drujba</option>
           <option value="Yunusobod">Yunusobod</option>
+          <option value="Minor">Minor</option>
+          <option value="Xalqlar do'stligi">Xalqlar do'stligi</option>
           <option value="Beruniy">Beruniy</option>
         </select>
       </div>
@@ -173,11 +159,11 @@
         </select>
       </div>
       <div class="filter-group">
-        <label>Til</label>
-        <select id="tilFilter" onchange="update()">
-          <option value="">Barcha tillar</option>
-          <option value="Rus">Rus</option>
-          <option value="O'zb">O'zbek</option>
+        <label>Holat</label>
+        <select id="holatFilter" onchange="update()">
+          <option value="">Barcha holat</option>
+          <option value="Yangi">🟢 Yangi</option>
+          <option value="Eski">🔵 Eski</option>
         </select>
       </div>
       <div class="filter-group" style="margin-left:auto">
@@ -194,23 +180,31 @@
       </div>
     </div>
 
-    <!-- Stats -->
+    <!-- Stats (4 cards) -->
     <div class="stats-row">
       <div class="stat-card card-enrolled">
-        <div class="stat-label">Band qilingan</div>
+        <div class="stat-label">Jami o'quvchi</div>
         <div class="stat-chart-wrap">
           <canvas id="chartEnrolled"></canvas>
-          <div class="stat-center"><div class="big" id="valEnrolled" style="color:#4361ee">0</div><div class="small">o'quvchi</div></div>
+          <div class="stat-center"><div class="big" id="valEnrolled" style="color:#4361ee">0</div><div class="small">kishi</div></div>
         </div>
         <div class="stat-sub" id="subEnrolled">—</div>
       </div>
-      <div class="stat-card card-free">
-        <div class="stat-label">Bo'sh o'rinlar</div>
+      <div class="stat-card card-yangi">
+        <div class="stat-label">Yangi o'quvchi</div>
         <div class="stat-chart-wrap">
-          <canvas id="chartFree"></canvas>
-          <div class="stat-center"><div class="big" id="valFree" style="color:#06d6a0">0</div><div class="small">joy</div></div>
+          <canvas id="chartYangi"></canvas>
+          <div class="stat-center"><div class="big" id="valYangi" style="color:#0891b2">0</div><div class="small">yangi</div></div>
         </div>
-        <div class="stat-sub" id="subFree">—</div>
+        <div class="stat-sub" id="subYangi">—</div>
+      </div>
+      <div class="stat-card card-eski">
+        <div class="stat-label">Eski o'quvchi</div>
+        <div class="stat-chart-wrap">
+          <canvas id="chartEski"></canvas>
+          <div class="stat-center"><div class="big" id="valEski" style="color:#6c5ce7">0</div><div class="small">eski</div></div>
+        </div>
+        <div class="stat-sub" id="subEski">—</div>
       </div>
       <div class="stat-card card-fill">
         <div class="stat-label">To'lganlik</div>
@@ -226,7 +220,7 @@
     <div class="main-grid">
       <div class="card">
         <h2 id="classroomTitle">Sinf xonasi</h2>
-        <div class="subtitle" id="classroomSubtitle">Filial, sinf va tilni tanlang</div>
+        <div class="subtitle" id="classroomSubtitle">Filial va sinfni tanlang</div>
         <div id="overflowBox" style="display:none" class="overflow-box">
           <div class="ov-icon">⚠️</div>
           <div class="ov-text">
@@ -267,15 +261,26 @@
 
   <div id="loadingEl" class="loading-overlay">
     <div class="spinner"></div>
-    <div>Google Sheets'dan ma'lumot yuklanmoqda...</div>
+    <div>Ma'lumot yuklanmoqda (4 filial)...</div>
   </div>
   <div id="errorEl" class="error-box" style="display:none"></div>
 </div>
 
 <script>
-const FILE_ID = '1OTqSYdX9eMOE9s4jVdlzyMQY92ep5AzwkKW1BVPKADI';
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQs9DXOFSUq9s-tqDb3XTObvFEiARZizX_c4xalKrd1_CYHVKPm5GxgbgfDzHz6mLh25-twEfvXp_GE/pub?output=csv&gid=0';
-const FILIAL_CAPACITY = { Minor: 436, Yunusobod: 464, Drujba: 144, Beruniy: 180 };
+const SHEET_ID = '1P-QqcLRI4G3Sx030SobDiwt7YyVDwhKz5vs4TaLCBJ4';
+
+const FILIAL_CONFIG = {
+  'Yunusobod':         { capacity: 436, izohCol: 17, sheet: 'Yunusobod filiali' },
+  'Minor':             { capacity: 464, izohCol: 17, sheet: 'Minor filiali' },
+  "Xalqlar do'stligi": { capacity: 180, izohCol: 13, sheet: "Xalqlar do'stligi filiali" },
+  'Beruniy':           { capacity: 144, izohCol: 12, sheet: 'Beruniy filiali' },
+};
+
+const TOTAL_CAPACITY = Object.values(FILIAL_CONFIG).reduce((s, c) => s + c.capacity, 0); // 1224
+
+function csvUrl(sheetName) {
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName).replace(/'/g,'%27')}`;
+}
 
 function getSeatCapacity() {
   const preset = document.getElementById('capPreset');
@@ -299,14 +304,11 @@ function onCapPreset() {
   update();
 }
 
-// Exclude keywords in Izoh column
 const CANCEL_KEYWORDS = ['bekor'];
-
 let allStudents = [];
-let cancelledCount = 0;
 let charts = {};
 
-/* ─── CSV parser (handles quoted fields) ─── */
+/* ─── CSV parser ─── */
 function parseCSV(text) {
   const rows = [];
   const lines = text.split(/\r?\n/);
@@ -326,46 +328,46 @@ function parseCSV(text) {
   return rows;
 }
 
-/* ─── Cancellation check ─── */
 function isCancelled(izoh) {
   const lower = (izoh || '').toLowerCase();
   return CANCEL_KEYWORDS.some(kw => lower.includes(kw));
 }
 
-/* ─── Load data from Google Sheets (public CSV) ─── */
+/* ─── Load data (4 sheets in parallel) ─── */
 async function loadData() {
   const btn = document.getElementById('reloadBtn');
   btn.classList.add('spinning');
   document.getElementById('errorEl').style.display = 'none';
 
   try {
-    const resp = await fetch(CSV_URL);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const text = await resp.text();
+    const entries = Object.entries(FILIAL_CONFIG);
+    const fetches = entries.map(([filial, cfg]) =>
+      fetch(csvUrl(cfg.sheet))
+        .then(r => { if (!r.ok) throw new Error(`${filial}: HTTP ${r.status}`); return r.text(); })
+        .then(text => ({ filial, text, cfg }))
+    );
 
-    const rows = parseCSV(text);
+    const results = await Promise.all(fetches);
     allStudents = [];
 
-    for (let i = 1; i < rows.length; i++) {
-      const r = rows[i];
-      if (!r[0] || !r[0].match(/^\d+$/)) continue;
+    for (const { filial, text, cfg } of results) {
+      const rows = parseCSV(text);
+      for (let i = 1; i < rows.length; i++) {
+        const r = rows[i];
+        const ism = (r[1] || '').trim();
+        if (!ism) continue;
 
-      const filial   = r[3] || '';
-      const yonalish = r[4] || '';
-      const til      = r[5] || '';
-      const sinfStr  = r[6] || '';
-      const izoh     = r[9] || '';
+        const sinfStr = (r[2] || '').trim();
+        const sinf = parseInt(sinfStr); // "11-sinf" → 11
+        if (isNaN(sinf)) continue;
 
-      if (yonalish !== 'Kim/Bio') continue;
-      if (!filial || !til || !sinfStr) continue;
+        const holat = (r[3] || '').trim().replace(/\s+/g, ' ');
+        const izoh  = (r[cfg.izohCol] || '').toLowerCase();
 
-      const sinf = parseInt(sinfStr);
-      if (isNaN(sinf)) continue;
-      if (isCancelled(izoh)) continue;
+        if (isCancelled(izoh)) continue;
 
-      const ism     = r[2] || '—';
-      const otaOna  = r[1] || '—';
-      allStudents.push({ filial, til, sinf, ism, otaOna });
+        allStudents.push({ filial, sinf, ism, holat });
+      }
     }
 
     document.getElementById('loadingEl').style.display = 'none';
@@ -379,13 +381,13 @@ async function loadData() {
     document.getElementById('loadingEl').style.display = 'none';
     const errEl = document.getElementById('errorEl');
     errEl.style.display = 'block';
-    errEl.textContent = '⚠️ Ma\'lumot yuklashda xatolik: ' + (e.message || e);
+    errEl.innerHTML = `⚠️ Ma'lumot yuklashda xatolik: ${e.message || e}<br><small>Google Sheets'ni "Har kim ko'rishi mumkin" holatida ulashganingizni tekshiring.</small>`;
   }
 
   btn.classList.remove('spinning');
 }
 
-/* ─── Donut charts ─── */
+/* ─── Charts ─── */
 const donutOpts = { cutout:'72%', plugins:{ legend:{display:false}, tooltip:{enabled:false} }, animation:{duration:400}, borderWidth:0 };
 
 function makeDonut(id, val, total, color, track) {
@@ -398,7 +400,8 @@ function makeDonut(id, val, total, color, track) {
 }
 function initCharts() {
   charts.enrolled = makeDonut('chartEnrolled', 0, 1,   '#4361ee', '#e8eaff');
-  charts.free      = makeDonut('chartFree',    1, 1,   '#06d6a0', '#e6faf5');
+  charts.yangi     = makeDonut('chartYangi',   0, 1,   '#0891b2', '#e0f2fe');
+  charts.eski      = makeDonut('chartEski',    0, 1,   '#6c5ce7', '#ede9fe');
   charts.fill      = makeDonut('chartFill',    0, 100, '#f77f00', '#fff3e0');
 }
 function updChart(chart, val, total) {
@@ -406,52 +409,57 @@ function updChart(chart, val, total) {
   chart.update();
 }
 
-/* ─── Filter helpers ─── */
-function getFiltered(filial, sinf, til) {
+/* ─── Helpers ─── */
+function getFiltered(filial, sinf, holat) {
   return allStudents.filter(s =>
     (!filial || s.filial === filial) &&
     (!sinf   || s.sinf  === parseInt(sinf)) &&
-    (!til    || s.til   === til)
+    (!holat  || s.holat === holat)
   );
 }
-function getCapacity(filial, sinf, til) {
-  if (filial && sinf && til) return getSeatCapacity();
-  if (!filial) return Object.values(FILIAL_CAPACITY).reduce((a,b)=>a+b,0);
-  return FILIAL_CAPACITY[filial] || 0;
+
+function getCapacity(filial, sinf) {
+  if (filial && sinf) return getSeatCapacity();
+  if (filial)         return FILIAL_CONFIG[filial]?.capacity || 0;
+  return TOTAL_CAPACITY;
 }
 
 /* ─── Main update ─── */
 function update() {
   const filial = document.getElementById('filialFilter').value;
   const sinf   = document.getElementById('sinfFilter').value;
-  const til    = document.getElementById('tilFilter').value;
+  const holat  = document.getElementById('holatFilter').value;
 
-  const filtered  = getFiltered(filial, sinf, til);
-  const enrolled  = filtered.length;
-  const capacity  = getCapacity(filial, sinf, til);
-  const free      = Math.max(0, capacity - enrolled);
-  const pct       = capacity > 0 ? Math.round(enrolled/capacity*100) : 0;
-  const totalCap  = Object.values(FILIAL_CAPACITY).reduce((a,b)=>a+b,0);
+  const filtered = getFiltered(filial, sinf, holat);
+  const enrolled = filtered.length;
+  const yangiCnt = filtered.filter(s => s.holat === 'Yangi').length;
+  const eskiCnt  = filtered.filter(s => s.holat === 'Eski').length;
+  const capacity = getCapacity(filial, sinf);
+  const pct      = capacity > 0 ? Math.round(enrolled / capacity * 100) : 0;
 
   document.getElementById('valEnrolled').textContent = enrolled;
-  document.getElementById('valFree').textContent     = free;
+  document.getElementById('valYangi').textContent    = yangiCnt;
+  document.getElementById('valEski').textContent     = eskiCnt;
   document.getElementById('valFill').textContent     = pct + '%';
+
   document.getElementById('subEnrolled').textContent = `${pct}% band`;
-  document.getElementById('subFree').textContent     = `${100-pct}% bo'sh`;
-  document.getElementById('subFill').textContent     = pct>=80?'🔴 Deyarli to\'ldi':pct>=50?'🟡 Yarim to\'lgan':'🟢 Ochiq';
+  document.getElementById('subYangi').textContent    = enrolled > 0 ? `${Math.round(yangiCnt/enrolled*100)}% yangi` : '—';
+  document.getElementById('subEski').textContent     = enrolled > 0 ? `${Math.round(eskiCnt/enrolled*100)}% eski` : '—';
+  document.getElementById('subFill').textContent     = pct >= 80 ? '🔴 Deyarli to\'ldi' : pct >= 50 ? '🟡 Yarim to\'lgan' : '🟢 Ochiq';
 
   updChart(charts.enrolled, enrolled, capacity);
-  updChart(charts.free,     free,     capacity);
+  updChart(charts.yangi,    yangiCnt, Math.max(enrolled, 1));
+  updChart(charts.eski,     eskiCnt,  Math.max(enrolled, 1));
   updChart(charts.fill,     pct,      100);
 
-
-  renderClassroom(filial, sinf, til, enrolled);
-  renderFilialTable(sinf, til);
-  renderChips(filial, sinf, til);
-  renderStudentList(filial, sinf, til);
+  renderClassroom(filial, sinf, enrolled);
+  renderFilialTable(sinf, holat);
+  renderChips(filial, sinf, holat);
+  renderStudentList(filial, sinf, holat);
 }
 
-function renderClassroom(filial, sinf, til, enrolled) {
+/* ─── Classroom grid ─── */
+function renderClassroom(filial, sinf, enrolled) {
   const title       = document.getElementById('classroomTitle');
   const subtitle    = document.getElementById('classroomSubtitle');
   const info        = document.getElementById('classroomInfo');
@@ -460,11 +468,11 @@ function renderClassroom(filial, sinf, til, enrolled) {
   const overflowMsg = document.getElementById('overflowMsg');
   const overflowSub = document.getElementById('overflowSub');
 
-  if (!filial || !sinf || !til) {
+  if (!filial || !sinf) {
     title.textContent    = 'Sinf xonasi';
-    subtitle.textContent = 'Aniq ko\'rish uchun filial + sinf + tilni tanlang';
+    subtitle.textContent = 'Aniq ko\'rish uchun filial + sinfni tanlang';
     info.innerHTML = '';
-    grid.innerHTML = '<div class="no-data">📚 Barcha parametrlarni tanlang</div>';
+    grid.innerHTML = '<div class="no-data">📚 Filial va sinfni tanlang</div>';
     overflowBox.style.display = 'none';
     return;
   }
@@ -475,10 +483,9 @@ function renderClassroom(filial, sinf, til, enrolled) {
   const free     = Math.max(0, cap - enrolled);
   const isFull   = enrolled >= cap;
 
-  title.textContent    = `${filial} · ${sinf}-sinf · ${til==="O'zb"?"O'zbek":"Rus"} tili`;
-  subtitle.textContent = `Kim/Bio · ${cap} o'rinli sinf xonasi`;
+  title.textContent    = `${filial} · ${sinf}-sinf`;
+  subtitle.textContent = `${cap} o'rinli sinf xonasi`;
 
-  // Overflow warning
   if (overflow > 0) {
     overflowBox.style.display = 'flex';
     overflowMsg.textContent   = `${overflow} ta bolaga joy yo'q!`;
@@ -493,38 +500,39 @@ function renderClassroom(filial, sinf, til, enrolled) {
       ? `<span class="ci-badge" style="background:#fff3cd;color:#856404">⚠️ +${overflow} oshib ketdi</span>`
       : `<span class="ci-badge ci-free">🟢 ${free} bo'sh</span>`
     }
-    <span class="ci-status ${isFull?'status-full':'status-open'}">${isFull?"🔒 TO'LDI":"✅ OCHIQ"}</span>`;
+    <span class="ci-status ${isFull ? 'status-full' : 'status-open'}">${isFull ? "🔒 TO'LDI" : '✅ OCHIQ'}</span>`;
 
-  // Draw seats: cap seats shown, first `seated` are red, rest green
   let html = '';
   for (let i = 1; i <= cap; i++)
-    html += `<div class="seat ${i<=seated?'occupied':'free'}">${i}</div>`;
+    html += `<div class="seat ${i <= seated ? 'occupied' : 'free'}">${i}</div>`;
   grid.innerHTML = html;
 }
 
-function renderFilialTable(sinfF, tilF) {
+/* ─── Filial stats table ─── */
+function renderFilialTable(sinfF, holatF) {
   const tbody = document.getElementById('filialBody');
   let html = '';
-  ['Minor','Yunusobod','Drujba','Beruniy'].forEach(f => {
-    const n   = getFiltered(f, sinfF, tilF).length;
-    const cap = FILIAL_CAPACITY[f];
-    const fr  = Math.max(0, cap-n);
-    const pct = Math.round(n/cap*100);
+  for (const [f, cfg] of Object.entries(FILIAL_CONFIG)) {
+    const n   = getFiltered(f, sinfF, holatF).length;
+    const cap = cfg.capacity;
+    const fr  = Math.max(0, cap - n);
+    const pct = Math.round(n / cap * 100);
     html += `<tr>
       <td class="filial-name">${f}</td>
       <td style="font-weight:700;color:#4361ee">${n}</td>
       <td style="font-weight:700;color:#06a87e">${fr}</td>
-      <td><span class="badge ${pct>=100?'badge-full':'badge-open'}">${pct>=100?"To'ldi":'Ochiq'}</span></td>
+      <td><span class="badge ${pct >= 100 ? 'badge-full' : 'badge-open'}">${pct >= 100 ? "To'ldi" : 'Ochiq'}</span></td>
       <td><div style="display:flex;align-items:center;gap:6px">
         <div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pct,100)}%"></div></div>
         <span style="font-size:12px;color:#888">${pct}%</span>
       </div></td>
     </tr>`;
-  });
+  }
   tbody.innerHTML = html;
 }
 
-function renderChips(filialF, sinfF, tilF) {
+/* ─── Class chips ─── */
+function renderChips(filialF, sinfF, holatF) {
   const wrap     = document.getElementById('classChips');
   const subtitle = document.getElementById('chipsSubtitle');
   const combos   = {};
@@ -532,48 +540,50 @@ function renderChips(filialF, sinfF, tilF) {
   allStudents.forEach(s => {
     if (filialF && s.filial !== filialF) return;
     if (sinfF   && s.sinf  !== parseInt(sinfF)) return;
-    if (tilF    && s.til   !== tilF) return;
-    const k = `${s.filial}|${s.sinf}|${s.til}`;
-    if (!combos[k]) combos[k] = { filial:s.filial, sinf:s.sinf, til:s.til, count:0 };
+    if (holatF  && s.holat !== holatF) return;
+    const k = `${s.filial}|${s.sinf}`;
+    if (!combos[k]) combos[k] = { filial: s.filial, sinf: s.sinf, count: 0, yangi: 0, eski: 0 };
     combos[k].count++;
+    if (s.holat === 'Yangi') combos[k].yangi++;
+    else if (s.holat === 'Eski') combos[k].eski++;
   });
 
-  const keys = Object.keys(combos).sort((a,b) => {
-    const ca=combos[a], cb=combos[b];
-    if (ca.filial!==cb.filial) return ca.filial.localeCompare(cb.filial);
-    if (ca.sinf  !==cb.sinf)   return ca.sinf-cb.sinf;
-    return ca.til.localeCompare(cb.til);
+  const keys = Object.keys(combos).sort((a, b) => {
+    const ca = combos[a], cb = combos[b];
+    if (ca.filial !== cb.filial) return ca.filial.localeCompare(cb.filial);
+    return ca.sinf - cb.sinf;
   });
 
   subtitle.textContent = `${keys.length} ta kombinatsiya · chipga bosing`;
 
-  if (!keys.length) { wrap.innerHTML='<span style="color:#aaa;font-size:13px">Hech narsa topilmadi</span>'; return; }
+  if (!keys.length) { wrap.innerHTML = '<span style="color:#aaa;font-size:13px">Hech narsa topilmadi</span>'; return; }
 
+  const cap2 = getSeatCapacity();
   wrap.innerHTML = keys.map(k => {
     const c   = combos[k];
-    const cap2 = getSeatCapacity();
-    const pct = Math.round(c.count/cap2*100);
-    const cls = pct>=100?'chip-full':pct>=50?'chip-partial':'chip-low';
-    const overflow2 = c.count > cap2 ? ` ⚠️+${c.count-cap2}` : '';
-    return `<div class="chip ${cls}" onclick="selectCombo('${c.filial}','${c.sinf}','${c.til}')">${c.filial} · ${c.sinf}-sinf · ${c.til==="O'zb"?"O'zb":"Rus"} — ${c.count}/${cap2}${overflow2}</div>`;
+    const pct = Math.round(c.count / cap2 * 100);
+    const cls = pct >= 100 ? 'chip-full' : pct >= 50 ? 'chip-partial' : 'chip-low';
+    const ov  = c.count > cap2 ? ` ⚠️+${c.count - cap2}` : '';
+    const sub = `<span style="opacity:.7;font-size:10px;margin-left:4px">🟢${c.yangi} 🔵${c.eski}</span>`;
+    return `<div class="chip ${cls}" onclick="selectCombo('${c.filial}','${c.sinf}')">${c.filial} · ${c.sinf}-sinf — ${c.count}/${cap2}${ov}${sub}</div>`;
   }).join('');
 }
 
-function renderStudentList(filial, sinf, til) {
-  const card     = document.getElementById('studentListCard');
-  const titleEl  = document.getElementById('studentListTitle');
-  const subEl    = document.getElementById('studentListSubtitle');
-  const bodyEl   = document.getElementById('studentListBody');
+/* ─── Student list ─── */
+function renderStudentList(filial, sinf, holat) {
+  const card    = document.getElementById('studentListCard');
+  const titleEl = document.getElementById('studentListTitle');
+  const subEl   = document.getElementById('studentListSubtitle');
+  const bodyEl  = document.getElementById('studentListBody');
 
-  if (!filial || !sinf || !til) {
+  if (!filial || !sinf) {
     card.style.display = 'none';
     return;
   }
 
-  const students = getFiltered(filial, sinf, til);
+  const students = getFiltered(filial, sinf, holat);
   card.style.display = 'block';
-  const tilLabel = til === "O'zb" ? "O'zbek" : "Rus";
-  titleEl.textContent = `${filial} · ${sinf}-sinf · ${tilLabel} tili — O'quvchilar ro'yxati`;
+  titleEl.textContent = `${filial} · ${sinf}-sinf${holat ? ' · ' + holat : ''} — O'quvchilar ro'yxati`;
   subEl.textContent   = `Jami ${students.length} ta o'quvchi`;
 
   if (!students.length) {
@@ -581,29 +591,33 @@ function renderStudentList(filial, sinf, til) {
     return;
   }
 
-  let rows = students.map((s, i) => `
-    <tr>
+  const rows = students.map((s, i) => {
+    const holatBadge = s.holat === 'Yangi'
+      ? `<span class="holat-yangi">Yangi</span>`
+      : s.holat === 'Eski'
+        ? `<span class="holat-eski">Eski</span>`
+        : `<span class="holat-unknown">${s.holat || '—'}</span>`;
+    return `<tr>
       <td class="s-num">${i + 1}</td>
       <td class="s-name">${s.ism}</td>
-      <td class="s-parent">${s.otaOna}</td>
-    </tr>`).join('');
+      <td>${holatBadge}</td>
+    </tr>`;
+  }).join('');
 
   bodyEl.innerHTML = `
     <table class="student-table">
-      <thead><tr><th>#</th><th>Ism</th><th>Ota-ona ismi</th></tr></thead>
+      <thead><tr><th>#</th><th>Ism-familiya</th><th>Holat</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
 
-function selectCombo(filial, sinf, til) {
+function selectCombo(filial, sinf) {
   document.getElementById('filialFilter').value = filial;
   document.getElementById('sinfFilter').value   = sinf;
-  document.getElementById('tilFilter').value    = til;
   update();
-  window.scrollTo({ top:0, behavior:'smooth' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Start
 loadData();
 </script>
 </body>
