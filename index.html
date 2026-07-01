@@ -270,16 +270,20 @@
 const SHEET_ID = '1P-QqcLRI4G3Sx030SobDiwt7YyVDwhKz5vs4TaLCBJ4';
 
 const FILIAL_CONFIG = {
-  'Yunusobod':         { capacity: 436, izohCol: 17, sheet: 'Yunusobod filiali' },
-  'Minor':             { capacity: 464, izohCol: 17, sheet: 'Minor filiali' },
-  "Xalqlar do'stligi": { capacity: 180, izohCol: 13, sheet: "Xalqlar do'stligi filiali" },
-  'Beruniy':           { capacity: 144, izohCol: 12, sheet: 'Beruniy filiali' },
+  'Yunusobod':         { capacity: 436, izohCol: 17, sheet: 'Yunusobod filiali',           gid: null },
+  'Minor':             { capacity: 464, izohCol: 17, sheet: 'Minor filiali',                gid: null },
+  "Xalqlar do'stligi": { capacity: 180, izohCol: 14, sheet: "Xalqlar do'stligi filiali",   gid: '1621312429' },
+  'Beruniy':           { capacity: 144, izohCol: 12, sheet: 'Beruniy filiali',              gid: null },
 };
 
 const TOTAL_CAPACITY = Object.values(FILIAL_CONFIG).reduce((s, c) => s + c.capacity, 0); // 1224
 
-function csvUrl(sheetName) {
-  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName).replace(/'/g,'%27')}`;
+function csvUrl(cfg) {
+  if (cfg.gid) {
+    // GID orqali — apostrof muammosini chetlab o'tadi
+    return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${cfg.gid}`;
+  }
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(cfg.sheet)}`;
 }
 
 function getSeatCapacity() {
@@ -342,7 +346,7 @@ async function loadData() {
   try {
     const entries = Object.entries(FILIAL_CONFIG);
     const fetches = entries.map(([filial, cfg]) =>
-      fetch(csvUrl(cfg.sheet))
+      fetch(csvUrl(cfg))
         .then(r => { if (!r.ok) throw new Error(`${filial}: HTTP ${r.status}`); return r.text(); })
         .then(text => ({ filial, text, cfg }))
     );
