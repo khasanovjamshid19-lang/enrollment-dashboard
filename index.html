@@ -19,7 +19,6 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .info-banner { background: #fffbeb; border: 1.5px solid #fcd34d; border-radius: 10px; padding: 10px 16px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #78350f; }
-  .info-banner strong { font-weight: 700; }
 
   .container { padding: 20px 24px; max-width: 1100px; margin: 0 auto; }
 
@@ -95,21 +94,18 @@
   .overflow-box .ov-big  { font-size:18px; font-weight:800; color:#c62828; }
   .overflow-box .ov-sub  { font-size:12px; color:#991b1b; margin-top:2px; }
 
-  /* predefined capacity badge */
   .cap-preset-badge { display:inline-flex; align-items:center; gap:5px; background:#ede9fe; color:#5b21b6; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:700; }
 
-  /* Holat badges */
   .holat-yangi { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#dcfce7; color:#166534; }
   .holat-eski  { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#dbeafe; color:#1e40af; }
   .holat-unknown { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#f3f4f6; color:#6b7280; }
 
-  /* Student list */
   .student-table { width:100%; border-collapse:collapse; font-size:13px; }
   .student-table th { text-align:left; padding:7px 10px; font-size:11px; font-weight:700; color:#999; text-transform:uppercase; letter-spacing:.5px; border-bottom:2px solid #f0f2f8; }
   .student-table td { padding:9px 10px; border-bottom:1px solid #f5f7fa; }
   .student-table tr:last-child td { border-bottom:none; }
   .student-table tr:hover td { background:#f8f9fb; }
-  .s-num { color:#aaa; font-weight:700; width:30px; }
+  .s-num  { color:#aaa; font-weight:700; width:30px; }
   .s-name { font-weight:700; }
 
   @media(max-width:700px){
@@ -182,7 +178,6 @@
             oninput="update()">
         </div>
       </div>
-      <!-- shown instead of capGroup when predefined capacity applies -->
       <div class="filter-group" id="capFixed" style="margin-left:auto;display:none">
         <label>Sinf sig'imi</label>
         <div style="margin-top:2px" id="capFixedBadge"></div>
@@ -232,7 +227,7 @@
         <div class="subtitle" id="classroomSubtitle">Filial va sinfni tanlang</div>
         <div id="overflowBox" style="display:none" class="overflow-box">
           <div class="ov-icon">⚠️</div>
-          <div class="ov-text">
+          <div>
             <div class="ov-big" id="overflowMsg"></div>
             <div class="ov-sub" id="overflowSub"></div>
           </div>
@@ -266,7 +261,7 @@
       <div id="studentListBody"></div>
     </div>
 
-  </div><!-- /mainContent -->
+  </div>
 
   <div id="loadingEl" class="loading-overlay">
     <div class="spinner"></div>
@@ -281,29 +276,32 @@ const SHEET_ID = '1P-QqcLRI4G3Sx030SobDiwt7YyVDwhKz5vs4TaLCBJ4';
 /* ─── Filial konfiguratsiyasi ─── */
 const FILIAL_CONFIG = {
   'Yunusobod': {
-    capacity: 404,          // 32+64+72+108+128
+    capacity: 404,
     izohCol: 17,
     sheet: 'Yunusobod filiali',
     gid: null,
     sinfCapacity: { 7: 32, 8: 64, 9: 72, 10: 108, 11: 128 }
   },
   'Minor': {
-    capacity: 474,
+    capacity: 476,
     izohCol: 17,
     sheet: 'Minor filiali',
-    gid: null
+    gid: null,
+    sinfCapacity: { 7: 96, 8: 96, 9: 98, 10: 110, 11: 76 }
   },
   "Xalqlar do'stligi": {
     capacity: 180,
     izohCol: 14,
     sheet: "Xalqlar do'stligi filiali",
-    gid: '1621312429'
+    gid: '1621312429',
+    sinfCapacity: { 9: 72, 10: 72, 11: 36 }
   },
   'Beruniy': {
     capacity: 144,
     izohCol: 12,
     sheet: 'Beruniy filiali',
-    gid: null
+    gid: null,
+    sinfCapacity: { 9: 36, 10: 72, 11: 36 }
   },
 };
 
@@ -316,7 +314,7 @@ function csvUrl(cfg) {
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(cfg.sheet)}`;
 }
 
-/* ─── Belgilangan sig'im bormi? ─── */
+/* ─── Belgilangan sig'im ─── */
 function getPredefinedCap(filial, sinf) {
   if (!filial || !sinf) return null;
   const cfg = FILIAL_CONFIG[filial];
@@ -338,20 +336,30 @@ function getSeatCapacity() {
 }
 
 function onCapPreset() {
-  const preset = document.getElementById('capPreset').value;
-  const customEl = document.getElementById('capCustom');
-  customEl.style.display = preset === 'custom' ? 'inline-block' : 'none';
-  if (preset === 'custom') customEl.focus();
+  const v = document.getElementById('capPreset').value;
+  const cEl = document.getElementById('capCustom');
+  cEl.style.display = v === 'custom' ? 'inline-block' : 'none';
+  if (v === 'custom') cEl.focus();
   update();
 }
 
-/* ─── Sig'imni aniqlash ─── */
 function getCapacity(filial, sinf) {
   const pre = getPredefinedCap(filial, sinf);
   if (pre !== null) return pre;
   if (filial && sinf)  return getSeatCapacity();
   if (filial)          return FILIAL_CONFIG[filial]?.capacity || 0;
   return TOTAL_CAPACITY;
+}
+
+/* ─── Filial jadvali uchun sinf sig'imini hisoblash ─── */
+function getFilialCapForSinf(filialName, sinfF) {
+  const cfg = FILIAL_CONFIG[filialName];
+  if (!cfg) return 0;
+  if (sinfF) {
+    const sc = cfg.sinfCapacity?.[parseInt(sinfF)];
+    return sc !== undefined ? sc : cfg.capacity;
+  }
+  return cfg.capacity;
 }
 
 const CANCEL_KEYWORDS = ['bekor'];
@@ -390,29 +398,24 @@ async function loadData() {
 
   try {
     const entries = Object.entries(FILIAL_CONFIG);
-    const fetches = entries.map(([filial, cfg]) =>
+    const results = await Promise.all(entries.map(([filial, cfg]) =>
       fetch(csvUrl(cfg))
         .then(r => { if (!r.ok) throw new Error(`${filial}: HTTP ${r.status}`); return r.text(); })
         .then(text => ({ filial, text, cfg }))
-    );
+    ));
 
-    const results = await Promise.all(fetches);
     allStudents = [];
-
     for (const { filial, text, cfg } of results) {
       const rows = parseCSV(text);
       for (let i = 1; i < rows.length; i++) {
         const r = rows[i];
         const ism = (r[1] || '').trim();
         if (!ism) continue;
-
         const sinf = parseInt(r[2] || '');
         if (isNaN(sinf)) continue;
-
         const holat = (r[3] || '').trim();
         const izoh  = (r[cfg.izohCol] || '').toLowerCase();
         if (isCancelled(izoh)) continue;
-
         allStudents.push({ filial, sinf, ism, holat });
       }
     }
@@ -427,17 +430,16 @@ async function loadData() {
     document.getElementById('loadingEl').style.display = 'none';
     const errEl = document.getElementById('errorEl');
     errEl.style.display = 'block';
-    errEl.innerHTML = `⚠️ Ma'lumot yuklashda xatolik: ${e.message || e}<br><small>Google Sheets "Anyone with the link can view" holatida bo'lishi kerak.</small>`;
+    errEl.innerHTML = `⚠️ Xatolik: ${e.message || e}<br><small>Google Sheets "Anyone with the link can view" holatida bo'lishi kerak.</small>`;
   }
   btn.classList.remove('spinning');
 }
 
-/* ─── Donut chartlar ─── */
+/* ─── Chartlar ─── */
 const donutOpts = { cutout:'72%', plugins:{ legend:{display:false}, tooltip:{enabled:false} }, animation:{duration:400}, borderWidth:0 };
 
 function makeDonut(id, val, total, color, track) {
-  const ctx = document.getElementById(id).getContext('2d');
-  return new Chart(ctx, {
+  return new Chart(document.getElementById(id).getContext('2d'), {
     type: 'doughnut',
     data: { datasets: [{ data: [val, Math.max(0, total-val)], backgroundColor:[color, track||'#f0f2f8'] }] },
     options: { ...donutOpts }
@@ -454,7 +456,6 @@ function updChart(chart, val, total) {
   chart.update();
 }
 
-/* ─── Filter ─── */
 function getFiltered(filial, sinf, holat) {
   return allStudents.filter(s =>
     (!filial || s.filial === filial) &&
@@ -469,15 +470,14 @@ function update() {
   const sinf   = document.getElementById('sinfFilter').value;
   const holat  = document.getElementById('holatFilter').value;
 
-  // Sig'im selector ko'rsatish/yashirish
   const predefCap = getPredefinedCap(filial, sinf);
   const capGroup  = document.getElementById('capGroup');
   const capFixed  = document.getElementById('capFixed');
-  const capBadge  = document.getElementById('capFixedBadge');
   if (predefCap !== null) {
     capGroup.style.display = 'none';
     capFixed.style.display = 'flex';
-    capBadge.innerHTML = `<span class="cap-preset-badge">📐 ${predefCap} o'rin (belgilangan)</span>`;
+    document.getElementById('capFixedBadge').innerHTML =
+      `<span class="cap-preset-badge">📐 ${predefCap} o'rin (belgilangan)</span>`;
   } else {
     capGroup.style.display = 'flex';
     capFixed.style.display = 'none';
@@ -497,7 +497,7 @@ function update() {
   document.getElementById('subEnrolled').textContent = `${pct}% band`;
   document.getElementById('subYangi').textContent    = enrolled > 0 ? `${Math.round(yangiCnt/enrolled*100)}% yangi` : '—';
   document.getElementById('subEski').textContent     = enrolled > 0 ? `${Math.round(eskiCnt/enrolled*100)}% eski` : '—';
-  document.getElementById('subFill').textContent     = pct >= 80 ? '🔴 Deyarli to\'ldi' : pct >= 50 ? '🟡 Yarim to\'lgan' : '🟢 Ochiq';
+  document.getElementById('subFill').textContent     = pct >= 80 ? "🔴 Deyarli to'ldi" : pct >= 50 ? '🟡 Yarim to\'lgan' : '🟢 Ochiq';
 
   updChart(charts.enrolled, enrolled, capacity);
   updChart(charts.yangi,    yangiCnt, Math.max(enrolled, 1));
@@ -512,20 +512,18 @@ function update() {
 
 /* ─── Sinf xonasi ─── */
 function renderClassroom(filial, sinf, enrolled) {
-  const title       = document.getElementById('classroomTitle');
-  const subtitle    = document.getElementById('classroomSubtitle');
-  const info        = document.getElementById('classroomInfo');
-  const grid        = document.getElementById('seatGrid');
-  const overflowBox = document.getElementById('overflowBox');
-  const overflowMsg = document.getElementById('overflowMsg');
-  const overflowSub = document.getElementById('overflowSub');
+  const titleEl    = document.getElementById('classroomTitle');
+  const subtitleEl = document.getElementById('classroomSubtitle');
+  const infoEl     = document.getElementById('classroomInfo');
+  const gridEl     = document.getElementById('seatGrid');
+  const ovBox      = document.getElementById('overflowBox');
 
   if (!filial || !sinf) {
-    title.textContent    = 'Sinf xonasi';
-    subtitle.textContent = 'Aniq ko\'rish uchun filial + sinfni tanlang';
-    info.innerHTML = '';
-    grid.innerHTML = '<div class="no-data">📚 Filial va sinfni tanlang</div>';
-    overflowBox.style.display = 'none';
+    titleEl.textContent    = 'Sinf xonasi';
+    subtitleEl.textContent = "Aniq ko'rish uchun filial + sinfni tanlang";
+    infoEl.innerHTML = '';
+    gridEl.innerHTML = '<div class="no-data">📚 Filial va sinfni tanlang</div>';
+    ovBox.style.display = 'none';
     return;
   }
 
@@ -536,18 +534,18 @@ function renderClassroom(filial, sinf, enrolled) {
   const isFull   = enrolled >= cap;
   const isPre    = getPredefinedCap(filial, sinf) !== null;
 
-  title.textContent    = `${filial} · ${sinf}-sinf`;
-  subtitle.textContent = `${cap} o'rinli sinf xonasi${isPre ? ' (belgilangan sig\'im)' : ''}`;
+  titleEl.textContent    = `${filial} · ${sinf}-sinf`;
+  subtitleEl.textContent = `${cap} o'rinli sinf xonasi${isPre ? ' (belgilangan sig\'im)' : ''}`;
 
   if (overflow > 0) {
-    overflowBox.style.display = 'flex';
-    overflowMsg.textContent   = `${overflow} ta bolaga joy yo'q!`;
-    overflowSub.textContent   = `Sinf ${cap} ta o'ringa mo'ljallangan, ammo ${enrolled} ta bola ro'yxatda.`;
+    ovBox.style.display = 'flex';
+    document.getElementById('overflowMsg').textContent = `${overflow} ta bolaga joy yo'q!`;
+    document.getElementById('overflowSub').textContent = `Sinf ${cap} ta o'ringa mo'ljallangan, ammo ${enrolled} ta bola ro'yxatda.`;
   } else {
-    overflowBox.style.display = 'none';
+    ovBox.style.display = 'none';
   }
 
-  info.innerHTML = `
+  infoEl.innerHTML = `
     <span class="ci-badge ci-enrolled">🔴 ${enrolled} band</span>
     ${overflow > 0
       ? `<span class="ci-badge" style="background:#fff3cd;color:#856404">⚠️ +${overflow} oshib ketdi</span>`
@@ -558,20 +556,18 @@ function renderClassroom(filial, sinf, enrolled) {
   let html = '';
   for (let i = 1; i <= cap; i++)
     html += `<div class="seat ${i <= seated ? 'occupied' : 'free'}">${i}</div>`;
-  grid.innerHTML = html;
+  gridEl.innerHTML = html;
 }
 
 /* ─── Filiallar jadvali ─── */
 function renderFilialTable(sinfF, holatF) {
   const tbody = document.getElementById('filialBody');
   let html = '';
-  for (const [f, cfg] of Object.entries(FILIAL_CONFIG)) {
+  for (const [f] of Object.entries(FILIAL_CONFIG)) {
     const n   = getFiltered(f, sinfF, holatF).length;
-    const cap = sinfF && cfg.sinfCapacity
-      ? (cfg.sinfCapacity[parseInt(sinfF)] ?? cfg.capacity)
-      : cfg.capacity;
+    const cap = getFilialCapForSinf(f, sinfF);
     const fr  = Math.max(0, cap - n);
-    const pct = Math.round(n / cap * 100);
+    const pct = cap > 0 ? Math.round(n / cap * 100) : 0;
     html += `<tr>
       <td class="filial-name">${f}</td>
       <td style="font-weight:700;color:#4361ee">${n}</td>
@@ -613,14 +609,16 @@ function renderChips(filialF, sinfF, holatF) {
   if (!keys.length) { wrap.innerHTML = '<span style="color:#aaa;font-size:13px">Hech narsa topilmadi</span>'; return; }
 
   wrap.innerHTML = keys.map(k => {
-    const c   = combos[k];
-    const pre = getPredefinedCap(c.filial, c.sinf);
+    const c    = combos[k];
+    const pre  = getPredefinedCap(c.filial, c.sinf);
     const cap2 = pre !== null ? pre : getSeatCapacity();
     const pct  = Math.round(c.count / cap2 * 100);
     const cls  = pct >= 100 ? 'chip-full' : pct >= 50 ? 'chip-partial' : 'chip-low';
     const ov   = c.count > cap2 ? ` ⚠️+${c.count - cap2}` : '';
-    const sub  = `<span style="opacity:.7;font-size:10px;margin-left:4px">🟢${c.yangi} 🔵${c.eski}</span>`;
-    return `<div class="chip ${cls}" onclick="selectCombo('${c.filial}','${c.sinf}')">${c.filial} · ${c.sinf}-sinf — ${c.count}/${cap2}${ov}${sub}</div>`;
+    return `<div class="chip ${cls}" onclick="selectCombo('${c.filial}','${c.sinf}')">
+      ${c.filial} · ${c.sinf}-sinf — ${c.count}/${cap2}${ov}
+      <span style="opacity:.7;font-size:10px;margin-left:4px">🟢${c.yangi} 🔵${c.eski}</span>
+    </div>`;
   }).join('');
 }
 
@@ -638,7 +636,10 @@ function renderStudentList(filial, sinf, holat) {
   titleEl.textContent = `${filial} · ${sinf}-sinf${holat ? ' · ' + holat : ''} — O'quvchilar ro'yxati`;
   subEl.textContent   = `Jami ${students.length} ta o'quvchi`;
 
-  if (!students.length) { bodyEl.innerHTML = '<div class="no-data">Hech qanday o\'quvchi topilmadi</div>'; return; }
+  if (!students.length) {
+    bodyEl.innerHTML = '<div class="no-data">Hech qanday o\'quvchi topilmadi</div>';
+    return;
+  }
 
   bodyEl.innerHTML = `
     <table class="student-table">
