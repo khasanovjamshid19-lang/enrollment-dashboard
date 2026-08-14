@@ -133,7 +133,6 @@
       💡 <div><strong>Bekor qilish tizimi:</strong> O'quvchi o'qimaydi bo'lsa, <strong>Izoh</strong> ustuniga <code style="background:#fef3c7;padding:1px 5px;border-radius:4px">bekor</code> so'zini yozing — dashboard avtomatik chiqarib tashlaydi.</div>
     </div>
 
-    <!-- Filters -->
     <div class="filters">
       <div class="filter-group">
         <label>Filial</label>
@@ -184,7 +183,6 @@
       </div>
     </div>
 
-    <!-- Stats -->
     <div class="stats-row">
       <div class="stat-card card-enrolled">
         <div class="stat-label">Jami o'quvchi</div>
@@ -220,7 +218,6 @@
       </div>
     </div>
 
-    <!-- Main grid -->
     <div class="main-grid">
       <div class="card">
         <h2 id="classroomTitle">Sinf xonasi</h2>
@@ -273,7 +270,6 @@
 <script>
 const SHEET_ID = '1P-QqcLRI4G3Sx030SobDiwt7YyVDwhKz5vs4TaLCBJ4';
 
-/* ─── Filial konfiguratsiyasi ─── */
 const FILIAL_CONFIG = {
   'Yunusobod': {
     capacity: 404,
@@ -297,24 +293,23 @@ const FILIAL_CONFIG = {
     sinfCapacity: { 9: 72, 10: 72, 11: 36 }
   },
   'Beruniy': {
-    capacity: 144,
+    capacity: 108,
     izohCol: 12,
     sheet: 'Beruniy filiali',
     gid: null,
-    sinfCapacity: { 9: 36, 10: 72, 11: 36 }
+    sinfCapacity: { 9: 36, 10: 36, 11: 36 }
   },
 };
 
 const TOTAL_CAPACITY = Object.values(FILIAL_CONFIG).reduce((s, c) => s + c.capacity, 0);
+// 404 + 476 + 180 + 108 = 1168
 
 function csvUrl(cfg) {
-  if (cfg.gid) {
+  if (cfg.gid)
     return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${cfg.gid}`;
-  }
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(cfg.sheet)}`;
 }
 
-/* ─── Belgilangan sig'im ─── */
 function getPredefinedCap(filial, sinf) {
   if (!filial || !sinf) return null;
   const cfg = FILIAL_CONFIG[filial];
@@ -351,7 +346,6 @@ function getCapacity(filial, sinf) {
   return TOTAL_CAPACITY;
 }
 
-/* ─── Filial jadvali uchun sinf sig'imini hisoblash ─── */
 function getFilialCapForSinf(filialName, sinfF) {
   const cfg = FILIAL_CONFIG[filialName];
   if (!cfg) return 0;
@@ -366,19 +360,16 @@ const CANCEL_KEYWORDS = ['bekor'];
 let allStudents = [];
 let charts = {};
 
-/* ─── CSV parser ─── */
 function parseCSV(text) {
   const rows = [];
-  const lines = text.split(/\r?\n/);
-  for (const line of lines) {
+  for (const line of text.split(/\r?\n/)) {
     if (!line.trim()) continue;
     const cols = [];
     let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') { inQ = !inQ; }
+    for (const ch of line) {
+      if (ch === '"') inQ = !inQ;
       else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else { cur += ch; }
+      else cur += ch;
     }
     cols.push(cur.trim());
     rows.push(cols);
@@ -390,12 +381,10 @@ function isCancelled(izoh) {
   return CANCEL_KEYWORDS.some(kw => (izoh || '').toLowerCase().includes(kw));
 }
 
-/* ─── Ma'lumot yuklash ─── */
 async function loadData() {
   const btn = document.getElementById('reloadBtn');
   btn.classList.add('spinning');
   document.getElementById('errorEl').style.display = 'none';
-
   try {
     const entries = Object.entries(FILIAL_CONFIG);
     const results = await Promise.all(entries.map(([filial, cfg]) =>
@@ -403,12 +392,11 @@ async function loadData() {
         .then(r => { if (!r.ok) throw new Error(`${filial}: HTTP ${r.status}`); return r.text(); })
         .then(text => ({ filial, text, cfg }))
     ));
-
     allStudents = [];
     for (const { filial, text, cfg } of results) {
       const rows = parseCSV(text);
       for (let i = 1; i < rows.length; i++) {
-        const r = rows[i];
+        const r   = rows[i];
         const ism = (r[1] || '').trim();
         if (!ism) continue;
         const sinf = parseInt(r[2] || '');
@@ -419,13 +407,11 @@ async function loadData() {
         allStudents.push({ filial, sinf, ism, holat });
       }
     }
-
     document.getElementById('loadingEl').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
     if (!charts.enrolled) initCharts();
     update();
     document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('uz-UZ');
-
   } catch (e) {
     document.getElementById('loadingEl').style.display = 'none';
     const errEl = document.getElementById('errorEl');
@@ -435,7 +421,6 @@ async function loadData() {
   btn.classList.remove('spinning');
 }
 
-/* ─── Chartlar ─── */
 const donutOpts = { cutout:'72%', plugins:{ legend:{display:false}, tooltip:{enabled:false} }, animation:{duration:400}, borderWidth:0 };
 
 function makeDonut(id, val, total, color, track) {
@@ -464,24 +449,17 @@ function getFiltered(filial, sinf, holat) {
   );
 }
 
-/* ─── Asosiy update ─── */
 function update() {
   const filial = document.getElementById('filialFilter').value;
   const sinf   = document.getElementById('sinfFilter').value;
   const holat  = document.getElementById('holatFilter').value;
 
   const predefCap = getPredefinedCap(filial, sinf);
-  const capGroup  = document.getElementById('capGroup');
-  const capFixed  = document.getElementById('capFixed');
-  if (predefCap !== null) {
-    capGroup.style.display = 'none';
-    capFixed.style.display = 'flex';
+  document.getElementById('capGroup').style.display  = predefCap !== null ? 'none' : 'flex';
+  document.getElementById('capFixed').style.display  = predefCap !== null ? 'flex' : 'none';
+  if (predefCap !== null)
     document.getElementById('capFixedBadge').innerHTML =
       `<span class="cap-preset-badge">📐 ${predefCap} o'rin (belgilangan)</span>`;
-  } else {
-    capGroup.style.display = 'flex';
-    capFixed.style.display = 'none';
-  }
 
   const filtered = getFiltered(filial, sinf, holat);
   const enrolled = filtered.length;
@@ -497,7 +475,7 @@ function update() {
   document.getElementById('subEnrolled').textContent = `${pct}% band`;
   document.getElementById('subYangi').textContent    = enrolled > 0 ? `${Math.round(yangiCnt/enrolled*100)}% yangi` : '—';
   document.getElementById('subEski').textContent     = enrolled > 0 ? `${Math.round(eskiCnt/enrolled*100)}% eski` : '—';
-  document.getElementById('subFill').textContent     = pct >= 80 ? "🔴 Deyarli to'ldi" : pct >= 50 ? '🟡 Yarim to\'lgan' : '🟢 Ochiq';
+  document.getElementById('subFill').textContent     = pct >= 80 ? "🔴 Deyarli to'ldi" : pct >= 50 ? "🟡 Yarim to'lgan" : '🟢 Ochiq';
 
   updChart(charts.enrolled, enrolled, capacity);
   updChart(charts.yangi,    yangiCnt, Math.max(enrolled, 1));
@@ -510,17 +488,16 @@ function update() {
   renderStudentList(filial, sinf, holat);
 }
 
-/* ─── Sinf xonasi ─── */
 function renderClassroom(filial, sinf, enrolled) {
-  const titleEl    = document.getElementById('classroomTitle');
-  const subtitleEl = document.getElementById('classroomSubtitle');
-  const infoEl     = document.getElementById('classroomInfo');
-  const gridEl     = document.getElementById('seatGrid');
-  const ovBox      = document.getElementById('overflowBox');
+  const titleEl = document.getElementById('classroomTitle');
+  const subEl   = document.getElementById('classroomSubtitle');
+  const infoEl  = document.getElementById('classroomInfo');
+  const gridEl  = document.getElementById('seatGrid');
+  const ovBox   = document.getElementById('overflowBox');
 
   if (!filial || !sinf) {
-    titleEl.textContent    = 'Sinf xonasi';
-    subtitleEl.textContent = "Aniq ko'rish uchun filial + sinfni tanlang";
+    titleEl.textContent = 'Sinf xonasi';
+    subEl.textContent   = "Aniq ko'rish uchun filial + sinfni tanlang";
     infoEl.innerHTML = '';
     gridEl.innerHTML = '<div class="no-data">📚 Filial va sinfni tanlang</div>';
     ovBox.style.display = 'none';
@@ -534,8 +511,8 @@ function renderClassroom(filial, sinf, enrolled) {
   const isFull   = enrolled >= cap;
   const isPre    = getPredefinedCap(filial, sinf) !== null;
 
-  titleEl.textContent    = `${filial} · ${sinf}-sinf`;
-  subtitleEl.textContent = `${cap} o'rinli sinf xonasi${isPre ? ' (belgilangan sig\'im)' : ''}`;
+  titleEl.textContent = `${filial} · ${sinf}-sinf`;
+  subEl.textContent   = `${cap} o'rinli sinf xonasi${isPre ? " (belgilangan sig'im)" : ''}`;
 
   if (overflow > 0) {
     ovBox.style.display = 'flex';
@@ -559,9 +536,7 @@ function renderClassroom(filial, sinf, enrolled) {
   gridEl.innerHTML = html;
 }
 
-/* ─── Filiallar jadvali ─── */
 function renderFilialTable(sinfF, holatF) {
-  const tbody = document.getElementById('filialBody');
   let html = '';
   for (const [f] of Object.entries(FILIAL_CONFIG)) {
     const n   = getFiltered(f, sinfF, holatF).length;
@@ -579,14 +554,13 @@ function renderFilialTable(sinfF, holatF) {
       </div></td>
     </tr>`;
   }
-  tbody.innerHTML = html;
+  document.getElementById('filialBody').innerHTML = html;
 }
 
-/* ─── Chiplar ─── */
 function renderChips(filialF, sinfF, holatF) {
-  const wrap     = document.getElementById('classChips');
-  const subtitle = document.getElementById('chipsSubtitle');
-  const combos   = {};
+  const wrap = document.getElementById('classChips');
+  const sub  = document.getElementById('chipsSubtitle');
+  const combos = {};
 
   allStudents.forEach(s => {
     if (filialF && s.filial !== filialF) return;
@@ -601,11 +575,10 @@ function renderChips(filialF, sinfF, holatF) {
 
   const keys = Object.keys(combos).sort((a, b) => {
     const ca = combos[a], cb = combos[b];
-    if (ca.filial !== cb.filial) return ca.filial.localeCompare(cb.filial);
-    return ca.sinf - cb.sinf;
+    return ca.filial !== cb.filial ? ca.filial.localeCompare(cb.filial) : ca.sinf - cb.sinf;
   });
 
-  subtitle.textContent = `${keys.length} ta kombinatsiya · chipga bosing`;
+  sub.textContent = `${keys.length} ta kombinatsiya · chipga bosing`;
   if (!keys.length) { wrap.innerHTML = '<span style="color:#aaa;font-size:13px">Hech narsa topilmadi</span>'; return; }
 
   wrap.innerHTML = keys.map(k => {
@@ -622,7 +595,6 @@ function renderChips(filialF, sinfF, holatF) {
   }).join('');
 }
 
-/* ─── O'quvchilar ro'yxati ─── */
 function renderStudentList(filial, sinf, holat) {
   const card    = document.getElementById('studentListCard');
   const titleEl = document.getElementById('studentListTitle');
@@ -632,12 +604,12 @@ function renderStudentList(filial, sinf, holat) {
   if (!filial || !sinf) { card.style.display = 'none'; return; }
 
   const students = getFiltered(filial, sinf, holat);
-  card.style.display = 'block';
+  card.style.display  = 'block';
   titleEl.textContent = `${filial} · ${sinf}-sinf${holat ? ' · ' + holat : ''} — O'quvchilar ro'yxati`;
   subEl.textContent   = `Jami ${students.length} ta o'quvchi`;
 
   if (!students.length) {
-    bodyEl.innerHTML = '<div class="no-data">Hech qanday o\'quvchi topilmadi</div>';
+    bodyEl.innerHTML = "<div class='no-data'>Hech qanday o'quvchi topilmadi</div>";
     return;
   }
 
