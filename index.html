@@ -109,8 +109,8 @@
   .s-name { font-weight:700; }
 
   @media(max-width:700px){
-    .main-grid  { grid-template-columns:1fr; }
-    .stats-row  { grid-template-columns:repeat(2,1fr); }
+    .main-grid { grid-template-columns:1fr; }
+    .stats-row { grid-template-columns:repeat(2,1fr); }
   }
 </style>
 </head>
@@ -270,39 +270,43 @@
 <script>
 const SHEET_ID = '1P-QqcLRI4G3Sx030SobDiwt7YyVDwhKz5vs4TaLCBJ4';
 
+/* ───────────────────────────────────────────────
+   FILIAL KONFIGURATSIYASI
+   Barcha sig'imlar (2026-2027 o'quv yili)
+─────────────────────────────────────────────── */
 const FILIAL_CONFIG = {
   'Yunusobod': {
-    capacity: 404,
+    capacity: 394,                          // 32+54+72+108+128
     izohCol: 17,
     sheet: 'Yunusobod filiali',
     gid: null,
-    sinfCapacity: { 7: 32, 8: 64, 9: 72, 10: 108, 11: 128 }
+    sinfCapacity: { 7: 32, 8: 54, 9: 72, 10: 108, 11: 128 }
   },
   'Minor': {
-    capacity: 476,
+    capacity: 444,                          // 64+96+98+110+76
     izohCol: 17,
     sheet: 'Minor filiali',
     gid: null,
-    sinfCapacity: { 7: 96, 8: 96, 9: 98, 10: 110, 11: 76 }
+    sinfCapacity: { 7: 64, 8: 96, 9: 98, 10: 110, 11: 76 }
   },
   "Xalqlar do'stligi": {
-    capacity: 180,
+    capacity: 144,                          // 36+72+36
     izohCol: 14,
     sheet: "Xalqlar do'stligi filiali",
     gid: '1621312429',
-    sinfCapacity: { 9: 72, 10: 72, 11: 36 }
+    sinfCapacity: { 9: 36, 10: 72, 11: 36 }
   },
   'Beruniy': {
-    capacity: 108,
+    capacity: 100,                          // 32+32+36
     izohCol: 12,
     sheet: 'Beruniy filiali',
     gid: null,
-    sinfCapacity: { 9: 36, 10: 36, 11: 36 }
+    sinfCapacity: { 9: 32, 10: 32, 11: 36 }
   },
 };
 
 const TOTAL_CAPACITY = Object.values(FILIAL_CONFIG).reduce((s, c) => s + c.capacity, 0);
-// 404 + 476 + 180 + 108 = 1168
+// 394 + 444 + 144 + 100 = 1082
 
 function csvUrl(cfg) {
   if (cfg.gid)
@@ -312,37 +316,35 @@ function csvUrl(cfg) {
 
 function getPredefinedCap(filial, sinf) {
   if (!filial || !sinf) return null;
-  const cfg = FILIAL_CONFIG[filial];
-  if (cfg?.sinfCapacity) {
-    const v = cfg.sinfCapacity[parseInt(sinf)];
-    return v !== undefined ? v : null;
-  }
-  return null;
+  const sc = FILIAL_CONFIG[filial]?.sinfCapacity;
+  if (!sc) return null;
+  const v = sc[parseInt(sinf)];
+  return v !== undefined ? v : null;
 }
 
 function getSeatCapacity() {
-  const preset = document.getElementById('capPreset');
-  if (!preset) return 24;
-  if (preset.value === 'custom') {
+  const p = document.getElementById('capPreset');
+  if (!p) return 24;
+  if (p.value === 'custom') {
     const n = parseInt(document.getElementById('capCustom').value);
     return isNaN(n) || n < 1 ? 24 : n;
   }
-  return parseInt(preset.value) || 24;
+  return parseInt(p.value) || 24;
 }
 
 function onCapPreset() {
   const v = document.getElementById('capPreset').value;
-  const cEl = document.getElementById('capCustom');
-  cEl.style.display = v === 'custom' ? 'inline-block' : 'none';
-  if (v === 'custom') cEl.focus();
+  const el = document.getElementById('capCustom');
+  el.style.display = v === 'custom' ? 'inline-block' : 'none';
+  if (v === 'custom') el.focus();
   update();
 }
 
 function getCapacity(filial, sinf) {
   const pre = getPredefinedCap(filial, sinf);
   if (pre !== null) return pre;
-  if (filial && sinf)  return getSeatCapacity();
-  if (filial)          return FILIAL_CONFIG[filial]?.capacity || 0;
+  if (filial && sinf) return getSeatCapacity();
+  if (filial) return FILIAL_CONFIG[filial]?.capacity || 0;
   return TOTAL_CAPACITY;
 }
 
@@ -386,24 +388,23 @@ async function loadData() {
   btn.classList.add('spinning');
   document.getElementById('errorEl').style.display = 'none';
   try {
-    const entries = Object.entries(FILIAL_CONFIG);
-    const results = await Promise.all(entries.map(([filial, cfg]) =>
-      fetch(csvUrl(cfg))
-        .then(r => { if (!r.ok) throw new Error(`${filial}: HTTP ${r.status}`); return r.text(); })
-        .then(text => ({ filial, text, cfg }))
-    ));
+    const results = await Promise.all(
+      Object.entries(FILIAL_CONFIG).map(([filial, cfg]) =>
+        fetch(csvUrl(cfg))
+          .then(r => { if (!r.ok) throw new Error(`${filial}: HTTP ${r.status}`); return r.text(); })
+          .then(text => ({ filial, text, cfg }))
+      )
+    );
     allStudents = [];
     for (const { filial, text, cfg } of results) {
-      const rows = parseCSV(text);
-      for (let i = 1; i < rows.length; i++) {
+      for (let i = 1, rows = parseCSV(text); i < rows.length; i++) {
         const r   = rows[i];
         const ism = (r[1] || '').trim();
         if (!ism) continue;
         const sinf = parseInt(r[2] || '');
         if (isNaN(sinf)) continue;
         const holat = (r[3] || '').trim();
-        const izoh  = (r[cfg.izohCol] || '').toLowerCase();
-        if (isCancelled(izoh)) continue;
+        if (isCancelled((r[cfg.izohCol] || '').toLowerCase())) continue;
         allStudents.push({ filial, sinf, ism, holat });
       }
     }
@@ -416,7 +417,7 @@ async function loadData() {
     document.getElementById('loadingEl').style.display = 'none';
     const errEl = document.getElementById('errorEl');
     errEl.style.display = 'block';
-    errEl.innerHTML = `⚠️ Xatolik: ${e.message || e}<br><small>Google Sheets "Anyone with the link can view" holatida bo'lishi kerak.</small>`;
+    errEl.innerHTML = `⚠️ Xatolik: ${e.message || e}<br><small>Google Sheets "Anyone with the link can view" bo'lishi kerak.</small>`;
   }
   btn.classList.remove('spinning');
 }
@@ -426,7 +427,7 @@ const donutOpts = { cutout:'72%', plugins:{ legend:{display:false}, tooltip:{ena
 function makeDonut(id, val, total, color, track) {
   return new Chart(document.getElementById(id).getContext('2d'), {
     type: 'doughnut',
-    data: { datasets: [{ data: [val, Math.max(0, total-val)], backgroundColor:[color, track||'#f0f2f8'] }] },
+    data: { datasets: [{ data: [val, Math.max(0, total - val)], backgroundColor: [color, track || '#f0f2f8'] }] },
     options: { ...donutOpts }
   });
 }
@@ -437,7 +438,7 @@ function initCharts() {
   charts.fill      = makeDonut('chartFill',    0, 100, '#f77f00', '#fff3e0');
 }
 function updChart(chart, val, total) {
-  chart.data.datasets[0].data = [val, Math.max(0, total-val)];
+  chart.data.datasets[0].data = [val, Math.max(0, total - val)];
   chart.update();
 }
 
@@ -454,12 +455,12 @@ function update() {
   const sinf   = document.getElementById('sinfFilter').value;
   const holat  = document.getElementById('holatFilter').value;
 
-  const predefCap = getPredefinedCap(filial, sinf);
-  document.getElementById('capGroup').style.display  = predefCap !== null ? 'none' : 'flex';
-  document.getElementById('capFixed').style.display  = predefCap !== null ? 'flex' : 'none';
-  if (predefCap !== null)
+  const pre = getPredefinedCap(filial, sinf);
+  document.getElementById('capGroup').style.display = pre !== null ? 'none' : 'flex';
+  document.getElementById('capFixed').style.display = pre !== null ? 'flex' : 'none';
+  if (pre !== null)
     document.getElementById('capFixedBadge').innerHTML =
-      `<span class="cap-preset-badge">📐 ${predefCap} o'rin (belgilangan)</span>`;
+      `<span class="cap-preset-badge">📐 ${pre} o'rin (belgilangan)</span>`;
 
   const filtered = getFiltered(filial, sinf, holat);
   const enrolled = filtered.length;
@@ -514,20 +515,17 @@ function renderClassroom(filial, sinf, enrolled) {
   titleEl.textContent = `${filial} · ${sinf}-sinf`;
   subEl.textContent   = `${cap} o'rinli sinf xonasi${isPre ? " (belgilangan sig'im)" : ''}`;
 
+  ovBox.style.display = overflow > 0 ? 'flex' : 'none';
   if (overflow > 0) {
-    ovBox.style.display = 'flex';
     document.getElementById('overflowMsg').textContent = `${overflow} ta bolaga joy yo'q!`;
     document.getElementById('overflowSub').textContent = `Sinf ${cap} ta o'ringa mo'ljallangan, ammo ${enrolled} ta bola ro'yxatda.`;
-  } else {
-    ovBox.style.display = 'none';
   }
 
   infoEl.innerHTML = `
     <span class="ci-badge ci-enrolled">🔴 ${enrolled} band</span>
     ${overflow > 0
       ? `<span class="ci-badge" style="background:#fff3cd;color:#856404">⚠️ +${overflow} oshib ketdi</span>`
-      : `<span class="ci-badge ci-free">🟢 ${free} bo'sh</span>`
-    }
+      : `<span class="ci-badge ci-free">🟢 ${free} bo'sh</span>`}
     <span class="ci-status ${isFull ? 'status-full' : 'status-open'}">${isFull ? "🔒 TO'LDI" : '✅ OCHIQ'}</span>`;
 
   let html = '';
@@ -558,8 +556,8 @@ function renderFilialTable(sinfF, holatF) {
 }
 
 function renderChips(filialF, sinfF, holatF) {
-  const wrap = document.getElementById('classChips');
-  const sub  = document.getElementById('chipsSubtitle');
+  const wrap   = document.getElementById('classChips');
+  const subEl  = document.getElementById('chipsSubtitle');
   const combos = {};
 
   allStudents.forEach(s => {
@@ -578,7 +576,7 @@ function renderChips(filialF, sinfF, holatF) {
     return ca.filial !== cb.filial ? ca.filial.localeCompare(cb.filial) : ca.sinf - cb.sinf;
   });
 
-  sub.textContent = `${keys.length} ta kombinatsiya · chipga bosing`;
+  subEl.textContent = `${keys.length} ta kombinatsiya · chipga bosing`;
   if (!keys.length) { wrap.innerHTML = '<span style="color:#aaa;font-size:13px">Hech narsa topilmadi</span>'; return; }
 
   wrap.innerHTML = keys.map(k => {
