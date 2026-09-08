@@ -7,7 +7,6 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f4ff; color: #1a1a2e; min-height: 100vh; }
-
   .header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: white; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
   .header h1 { font-size: 18px; font-weight: 800; }
   .header p  { font-size: 12px; opacity: 0.55; margin-top: 2px; }
@@ -16,20 +15,30 @@
   .reload-btn.spinning span { display: inline-block; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* Til filtri */
+  .til-bar { background: white; border-bottom: 1.5px solid #e8eaf0; padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
+  .til-bar span { font-size: 12px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
+  .til-btn { padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1.5px solid transparent; background: #f0f2f8; color: #555; transition: all .15s; }
+  .til-btn:hover { background: #e0e4ef; }
+  .til-btn.active { background: #4361ee; color: white; border-color: #4361ee; }
+
   .container { padding: 16px; max-width: 700px; margin: 0 auto; }
 
-  /* Jami bo'sh joy kartasi */
   .total-card { background: linear-gradient(135deg, #4361ee, #6c8fff); color: white; border-radius: 16px; padding: 20px 24px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 20px rgba(67,97,238,0.35); }
   .total-card .label { font-size: 13px; opacity: 0.8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
   .total-card .big   { font-size: 48px; font-weight: 900; line-height: 1; margin-top: 4px; }
   .total-card .sub   { font-size: 13px; opacity: 0.75; margin-top: 4px; }
   .total-card .icon  { font-size: 52px; opacity: 0.3; }
 
-  /* Filial kartalar */
   .filial-card { background: white; border-radius: 14px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); overflow: hidden; }
   .filial-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer; user-select: none; }
   .filial-header:hover { background: #f8f9ff; }
+  .fh-left { display: flex; align-items: center; gap: 10px; }
   .filial-name { font-size: 16px; font-weight: 800; }
+  .til-tag { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+  .til-uzb { background: #fef9c3; color: #854d0e; }
+  .til-rus { background: #fee2e2; color: #991b1b; }
+  .til-mix { background: #ede9fe; color: #5b21b6; }
   .filial-meta { display: flex; align-items: center; gap: 10px; }
   .free-big  { font-size: 28px; font-weight: 900; color: #06b65e; }
   .free-zero { font-size: 28px; font-weight: 900; color: #e03; }
@@ -41,28 +50,32 @@
   .chevron { font-size: 14px; color: #ccc; margin-left: 4px; transition: transform 0.2s; }
   .filial-card.open .chevron { transform: rotate(180deg); }
 
-  /* Sinf satrlari */
   .sinf-list { border-top: 1px solid #f0f2f8; display: none; }
   .filial-card.open .sinf-list { display: block; }
-  .sinf-row { display: flex; align-items: center; padding: 10px 18px; border-bottom: 1px solid #f5f7fa; gap: 12px; }
+  .sinf-row { display: flex; align-items: center; padding: 10px 18px; border-bottom: 1px solid #f5f7fa; gap: 10px; }
   .sinf-row:last-child { border-bottom: none; }
-  .sinf-name { font-size: 13px; font-weight: 700; width: 60px; color: #555; }
-  .bar-wrap  { flex: 1; background: #f0f2f8; border-radius: 20px; height: 8px; overflow: hidden; }
-  .bar-fill  { height: 100%; border-radius: 20px; transition: width 0.4s; }
-  .bar-green  { background: linear-gradient(90deg, #06d6a0, #06b65e); }
-  .bar-yellow { background: linear-gradient(90deg, #fcd34d, #f59e0b); }
-  .bar-red    { background: linear-gradient(90deg, #f87171, #e03060); }
-  .sinf-nums { font-size: 12px; font-weight: 700; width: 80px; text-align: right; white-space: nowrap; }
+  .sinf-name  { font-size: 13px; font-weight: 700; width: 60px; color: #555; }
+  .sinf-til   { width: 28px; text-align: center; font-size: 14px; }
+  .bar-wrap   { flex: 1; background: #f0f2f8; border-radius: 20px; height: 8px; overflow: hidden; }
+  .bar-fill   { height: 100%; border-radius: 20px; transition: width 0.4s; }
+  .bar-green  { background: linear-gradient(90deg,#06d6a0,#06b65e); }
+  .bar-yellow { background: linear-gradient(90deg,#fcd34d,#f59e0b); }
+  .bar-red    { background: linear-gradient(90deg,#f87171,#e03060); }
+  .sinf-nums  { font-size: 12px; font-weight: 700; width: 90px; text-align: right; white-space: nowrap; }
   .sinf-nums .free  { color: #06b65e; }
   .sinf-nums .total { color: #aaa; }
   .full-badge { background: #fee; color: #c62828; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
-  .no-sinf { color: #aaa; font-size: 12px; padding: 10px 18px; }
+
+  /* Xalqlar do'stligi sinf ichida til breakdown */
+  .til-split { display: flex; gap: 6px; font-size: 11px; font-weight: 700; }
+  .ts-uzb { color: #854d0e; background: #fef9c3; padding: 1px 6px; border-radius: 10px; }
+  .ts-rus { color: #991b1b; background: #fee2e2; padding: 1px 6px; border-radius: 10px; }
 
   .loading { text-align: center; padding: 60px; color: #aaa; }
   .spinner { width: 32px; height: 32px; border: 3px solid #e0e4ef; border-top-color: #4361ee; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
   .error-box { background: #fff0f0; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 14px 18px; color: #c62828; font-size: 13px; margin: 12px 0; }
-
   .updated { text-align: center; color: #bbb; font-size: 12px; margin-top: 16px; padding-bottom: 24px; }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -72,9 +85,15 @@
     <h1>📋 Bo'sh Joylar Dashboard</h1>
     <p>Sotuv menejerlari uchun · 2026-2027</p>
   </div>
-  <button class="reload-btn" onclick="loadData()" id="reloadBtn">
-    <span>↻</span> Yangilash
-  </button>
+  <button class="reload-btn" onclick="loadData()" id="reloadBtn"><span>↻</span> Yangilash</button>
+</div>
+
+<!-- Til filtri -->
+<div class="til-bar">
+  <span>Til:</span>
+  <button class="til-btn active" onclick="setTil('')">Barchasi</button>
+  <button class="til-btn" onclick="setTil(\"O'zbek\")">🇺🇿 O'zbek</button>
+  <button class="til-btn" onclick="setTil('Rus')">🇷🇺 Rus</button>
 </div>
 
 <div class="container">
@@ -100,52 +119,58 @@ const SHEET_ID = '1P-QqcLRI4G3Sx030SobDiwt7YyVDwhKz5vs4TaLCBJ4';
 const FILIAL_CONFIG = {
   'Yunusobod': {
     capacity: 394, izohCol: 17, sheet: 'Yunusobod filiali', gid: null,
-    sinfCapacity: { 7: 32, 8: 54, 9: 72, 10: 108, 11: 128 }
+    sinfCapacity: { 7: 32, 8: 54, 9: 72, 10: 108, 11: 128 },
+    tilFixed: "O'zbek"
   },
   'Minor': {
     capacity: 476, izohCol: 17, sheet: 'Minor filiali', gid: null,
-    sinfCapacity: { 7: 64, 8: 96, 9: 98, 10: 142, 11: 76 }
+    sinfCapacity: { 7: 64, 8: 96, 9: 98, 10: 142, 11: 76 },
+    tilFixed: 'Rus'
   },
   "Xalqlar do'stligi": {
     capacity: 144, izohCol: 14, sheet: "Xalqlar do'stligi filiali", gid: '1621312429',
-    sinfCapacity: { 9: 36, 10: 72, 11: 36 }
+    sinfCapacity: { 9: 36, 10: 72, 11: 36 },
+    tilCol: 4,
+    // Har bir sinf uchun til taqsimoti (sig'im bo'yicha)
+    sinfTilCap: {
+      9:  { "Rus": 36, "O'zbek": 0 },
+      10: { "Rus": 36, "O'zbek": 36 },
+      11: { "Rus": 36, "O'zbek": 0 }
+    }
   },
   'Beruniy': {
     capacity: 100, izohCol: 12, sheet: 'Beruniy filiali', gid: null,
-    sinfCapacity: { 9: 32, 10: 32, 11: 36 }
+    sinfCapacity: { 9: 32, 10: 32, 11: 36 },
+    tilFixed: "O'zbek"
   },
 };
 
 const TOTAL_CAP = Object.values(FILIAL_CONFIG).reduce((s,c)=>s+c.capacity,0);
 
-function csvUrl(cfg) {
-  if (cfg.gid) return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${cfg.gid}`;
+function csvUrl(cfg){
+  if(cfg.gid) return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${cfg.gid}`;
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(cfg.sheet)}`;
 }
-
-function parseCSV(text) {
-  const rows = [];
-  for (const line of text.split(/\r?\n/)) {
-    if (!line.trim()) continue;
+function parseCSV(text){
+  const rows=[];
+  for(const line of text.split(/\r?\n/)){
+    if(!line.trim()) continue;
     const cols=[]; let cur='',inQ=false;
-    for (const ch of line) {
-      if(ch==='"') inQ=!inQ;
-      else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
-      else cur+=ch;
-    }
+    for(const ch of line){if(ch==='"')inQ=!inQ;else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}else cur+=ch;}
     cols.push(cur.trim()); rows.push(cols);
   }
   return rows;
 }
 
-let allStudents = [];
+let allStudents=[];
+let activeTil='';
 
-async function loadData() {
-  const btn = document.getElementById('reloadBtn');
+async function loadData(){
+  const btn=document.getElementById('reloadBtn');
   btn.classList.add('spinning');
   document.getElementById('errorEl').style.display='none';
   try {
-    const results = await Promise.all(Object.entries(FILIAL_CONFIG).map(([filial,cfg])=>
+    const results=await Promise.all(Object.entries(FILIAL_CONFIG).map(([filial,cfg])=>
       fetch(csvUrl(cfg)).then(r=>{if(!r.ok)throw new Error(`${filial}: ${r.status}`);return r.text();}).then(text=>({filial,text,cfg}))
     ));
     allStudents=[];
@@ -154,111 +179,147 @@ async function loadData() {
       for(let i=1;i<rows.length;i++){
         const r=rows[i]; const ism=(r[1]||'').trim(); if(!ism) continue;
         const sinf=parseInt(r[2]||''); if(isNaN(sinf)) continue;
-        const izoh=(r[cfg.izohCol]||'').toLowerCase();
-        if(izoh.includes('bekor')) continue;
-        allStudents.push({filial,sinf});
+        const izoh=(r[cfg.izohCol]||'').toLowerCase(); if(izoh.includes('bekor')) continue;
+        let til=cfg.tilFixed||'';
+        if(cfg.tilCol!==undefined) til=(r[cfg.tilCol]||'').trim();
+        allStudents.push({filial,sinf,til});
       }
     }
-    render();
     document.getElementById('loadingEl').style.display='none';
     document.getElementById('mainContent').style.display='block';
+    render();
     document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('uz-UZ');
-  } catch(e) {
+  } catch(e){
     document.getElementById('loadingEl').style.display='none';
     const errEl=document.getElementById('errorEl');
-    errEl.style.display='block';
-    errEl.textContent=`⚠️ Xatolik: ${e.message}`;
+    errEl.style.display='block'; errEl.textContent=`⚠️ Xatolik: ${e.message}`;
   }
   btn.classList.remove('spinning');
 }
 
-function pctClass(pct) {
-  if(pct>=90) return 'pct-red';
-  if(pct>=50) return 'pct-yellow';
-  return 'pct-green';
-}
-function barClass(pct) {
-  if(pct>=90) return 'bar-red';
-  if(pct>=50) return 'bar-yellow';
-  return 'bar-green';
+function setTil(t){
+  activeTil=t;
+  document.querySelectorAll('.til-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  render();
 }
 
-function render() {
-  let totalEnrolled=0, totalFree=0;
-  const filialData = {};
+function pctClass(pct){return pct>=90?'pct-red':pct>=50?'pct-yellow':'pct-green';}
+function barClass(pct){return pct>=90?'bar-red':pct>=50?'bar-yellow':'bar-green';}
 
-  for(const [name, cfg] of Object.entries(FILIAL_CONFIG)){
-    const students = allStudents.filter(s=>s.filial===name);
-    const enrolled = students.length;
-    const free = cfg.capacity - enrolled;
-    totalEnrolled += enrolled;
-    totalFree += free;
+function render(){
+  // Til filtrini hisobga olgan holda filial bo'sh joylarini hisoblash
+  let totalFreeCount=0, totalEnrolledFiltered=0;
+  const container=document.getElementById('filialCards');
+  container.innerHTML='';
 
-    // sinf breakdown
-    const sinfMap = {};
-    students.forEach(s=>{
-      sinfMap[s.sinf]=(sinfMap[s.sinf]||0)+1;
-    });
-
-    filialData[name]={cfg, enrolled, free, sinfMap};
-  }
-
-  document.getElementById('totalFree').textContent = totalFree;
-  document.getElementById('totalSub').textContent  = `${totalEnrolled} band · ${TOTAL_CAP} jami o'rin`;
-
-  const container = document.getElementById('filialCards');
-  container.innerHTML = '';
-
-  for(const [name, {cfg, enrolled, free, sinfMap}] of Object.entries(filialData)){
-    const pct = Math.round(enrolled/cfg.capacity*100);
-    const pill = pctClass(pct);
-
-    // sinf rows
-    let sinfHTML = '';
-    if(cfg.sinfCapacity){
-      for(const [sinf, cap] of Object.entries(cfg.sinfCapacity).sort((a,b)=>a[0]-b[0])){
-        const s = parseInt(sinf);
-        const cnt = sinfMap[s]||0;
-        const fr  = Math.max(0, cap-cnt);
-        const sp  = Math.round(cnt/cap*100);
-        const bc  = barClass(sp);
-        sinfHTML += `<div class="sinf-row">
-          <div class="sinf-name">${s}-sinf</div>
-          <div class="bar-wrap"><div class="bar-fill ${bc}" style="width:${Math.min(sp,100)}%"></div></div>
-          <div class="sinf-nums">
-            ${fr>0
-              ? `<span class="free">${fr} bo'sh</span> <span class="total">/ ${cap}</span>`
-              : `<span class="full-badge">To'ldi</span>`
-            }
-          </div>
-        </div>`;
+  for(const [name,cfg] of Object.entries(FILIAL_CONFIG)){
+    // Bu filial tanlangan tilga mos keladimi?
+    if(activeTil){
+      if(cfg.tilFixed && cfg.tilFixed!==activeTil) {
+        // Bu filial umuman boshqa til — yashiramiz
+        continue;
       }
-    } else {
-      sinfHTML = `<div class="no-sinf">Sinf ma'lumoti yo'q</div>`;
     }
 
-    const card = document.createElement('div');
-    card.className = 'filial-card';
-    card.innerHTML = `
+    const filStudents=allStudents.filter(s=>s.filial===name&&(!activeTil||s.til===activeTil));
+    const enrolled=filStudents.length;
+
+    // Sig'imni til bo'yicha hisoblash
+    let cap=cfg.capacity;
+    if(activeTil && cfg.sinfTilCap){
+      cap=Object.values(cfg.sinfTilCap).reduce((s,tc)=>s+(tc[activeTil]||0),0);
+    } else if(activeTil && cfg.tilFixed && cfg.tilFixed!==activeTil){
+      cap=0;
+    }
+
+    const free=Math.max(0,cap-enrolled);
+    totalFreeCount+=free;
+    totalEnrolledFiltered+=enrolled;
+    const pct=cap>0?Math.round(enrolled/cap*100):0;
+
+    // Til tagi
+    let tilTag='', tilEmoji='';
+    if(cfg.tilFixed==="O'zbek"){tilTag='🇺🇿 O\'zbek';tilEmoji='til-uzb';}
+    else if(cfg.tilFixed==='Rus'){tilTag='🇷🇺 Rus';tilEmoji='til-rus';}
+    else {tilTag='🇺🇿🇷🇺 Aralash';tilEmoji='til-mix';}
+
+    // Sinf satrlari
+    let sinfHTML='';
+    if(cfg.sinfCapacity){
+      for(const [sinf,sinfCap] of Object.entries(cfg.sinfCapacity).sort((a,b)=>a[0]-b[0])){
+        const s=parseInt(sinf);
+        const sStudents=allStudents.filter(st=>st.filial===name&&st.sinf===s&&(!activeTil||st.til===activeTil));
+        const sCnt=sStudents.length;
+
+        // Sinf sig'imi (til bo'yicha)
+        let sCap=sinfCap;
+        if(activeTil && cfg.sinfTilCap){
+          sCap=cfg.sinfTilCap[s]?.[activeTil]||0;
+          if(sCap===0) continue; // Bu sinfda bu tilda joy yo'q
+        }
+
+        const sFr=Math.max(0,sCap-sCnt); const sPct=sCap>0?Math.round(sCnt/sCap*100):0;
+        const bc=barClass(sPct);
+
+        // Til emoji sinf qatorida
+        let sinfTilEmoji='';
+        if(cfg.tilFixed==="O'zbek") sinfTilEmoji='🇺🇿';
+        else if(cfg.tilFixed==='Rus') sinfTilEmoji='🇷🇺';
+        else if(cfg.sinfTilCap?.[s]){
+          const tc=cfg.sinfTilCap[s];
+          if(tc["Rus"]>0&&tc["O'zbek"]>0) sinfTilEmoji='🇺🇿🇷🇺';
+          else if(tc["Rus"]>0) sinfTilEmoji='🇷🇺';
+          else sinfTilEmoji='🇺🇿';
+        }
+
+        // Aralash sinf uchun til taqsimoti
+        let tilSplitHTML='';
+        if(!activeTil && cfg.sinfTilCap?.[s]){
+          const tc=cfg.sinfTilCap[s];
+          const uzbSt=allStudents.filter(st=>st.filial===name&&st.sinf===s&&st.til==="O'zbek").length;
+          const rusSt=allStudents.filter(st=>st.filial===name&&st.sinf===s&&st.til==='Rus').length;
+          const parts=[];
+          if(tc["O'zbek"]>0) parts.push(`<span class="ts-uzb">🇺🇿 ${tc["O'zbek"]-uzbSt} bo'sh</span>`);
+          if(tc["Rus"]>0) parts.push(`<span class="ts-rus">🇷🇺 ${tc["Rus"]-rusSt} bo'sh</span>`);
+          if(parts.length) tilSplitHTML=`<div class="til-split" style="margin-left:4px">${parts.join('')}</div>`;
+        }
+
+        sinfHTML+=`<div class="sinf-row">
+          <div class="sinf-name">${s}-sinf</div>
+          <div class="sinf-til">${sinfTilEmoji}</div>
+          <div class="bar-wrap"><div class="bar-fill ${bc}" style="width:${Math.min(sPct,100)}%"></div></div>
+          ${tilSplitHTML||`<div class="sinf-nums">${sFr>0?`<span class="free">${sFr} bo'sh</span> <span class="total">/ ${sCap}</span>`:`<span class="full-badge">To'ldi</span>`}</div>`}
+        </div>`;
+      }
+    }
+
+    const card=document.createElement('div');
+    card.className='filial-card';
+    card.innerHTML=`
       <div class="filial-header" onclick="toggle(this)">
-        <div class="filial-name">${name}</div>
+        <div class="fh-left">
+          <div class="filial-name">${name}</div>
+          <span class="til-tag ${tilEmoji}">${tilTag}</span>
+        </div>
         <div class="filial-meta">
           <div>
             <div class="${free>0?'free-big':'free-zero'}">${free}</div>
             <div class="free-label">bo'sh joy</div>
           </div>
-          <span class="pct-pill ${pill}">${pct}% band</span>
+          <span class="pct-pill ${pctClass(pct)}">${pct}% band</span>
           <span class="chevron">▼</span>
         </div>
       </div>
-      <div class="sinf-list">${sinfHTML}</div>`;
+      <div class="sinf-list">${sinfHTML||'<div style="padding:12px 18px;color:#aaa;font-size:13px">Ma\'lumot yo\'q</div>'}</div>`;
     container.appendChild(card);
   }
+
+  document.getElementById('totalFree').textContent=totalFreeCount;
+  document.getElementById('totalSub').textContent=`${totalEnrolledFiltered} band · ${activeTil?'('+activeTil+' bo\'yicha)':TOTAL_CAP+' jami o\'rin'}`;
 }
 
-function toggle(header) {
-  header.parentElement.classList.toggle('open');
-}
+function toggle(header){header.parentElement.classList.toggle('open');}
 
 loadData();
 </script>
