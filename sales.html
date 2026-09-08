@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bo'sh Joylar &middot; Sotuv Dashboard</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f4ff; color: #1a1a2e; min-height: 100vh; }
+.header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: white; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.header h1 { font-size: 18px; font-weight: 800; }
+.header p  { font-size: 12px; opacity: 0.55; margin-top: 2px; }
+.reload-btn { background: rgba(255,255,255,0.13); border: 1.5px solid rgba(255,255,255,0.25); color: white; padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+.reload-btn:hover { background: rgba(255,255,255,0.22); }
+.reload-btn.spinning span { display: inline-block; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.til-bar { background: white; border-bottom: 1.5px solid #e8eaf0; padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
+.til-bar span { font-size: 12px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
+.til-btn { padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1.5px solid transparent; background: #f0f2f8; color: #555; transition: all .15s; }
+.til-btn:hover { background: #e0e4ef; }
+.til-btn.active { background: #4361ee; color: white; border-color: #4361ee; }
+.container { padding: 16px; max-width: 700px; margin: 0 auto; }
+.total-card { background: linear-gradient(135deg, #4361ee, #6c8fff); color: white; border-radius: 16px; padding: 20px 24px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 20px rgba(67,97,238,0.35); }
+.total-card .label { font-size: 13px; opacity: 0.8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.total-card .big   { font-size: 48px; font-weight: 900; line-height: 1; margin-top: 4px; }
+.total-card .sub   { font-size: 13px; opacity: 0.75; margin-top: 4px; }
+.total-card .icon  { font-size: 52px; opacity: 0.3; }
+.filial-card { background: white; border-radius: 14px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); overflow: hidden; }
+.filial-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer; user-select: none; }
+.filial-header:hover { background: #f8f9ff; }
+.fh-left { display: flex; align-items: center; gap: 10px; }
+.filial-name { font-size: 16px; font-weight: 800; }
+.til-tag { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.til-uzb { background: #fef9c3; color: #854d0e; }
+.til-rus { background: #fee2e2; color: #991b1b; }
+.til-mix { background: #ede9fe; color: #5b21b6; }
+.filial-meta { display: flex; align-items: center; gap: 10px; }
+.free-big  { font-size: 28px; font-weight: 900; color: #06b65e; }
+.free-zero { font-size: 28px; font-weight: 900; color: #e03; }
+.free-label { font-size: 11px; color: #aaa; font-weight: 600; text-align: right; margin-top: 1px; }
+.pct-pill { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+.pct-red    { background: #fee; color: #c62828; }
+.pct-yellow { background: #fef3c7; color: #92400e; }
+.pct-green  { background: #dcfce7; color: #166534; }
+.chevron { font-size: 14px; color: #ccc; margin-left: 4px; transition: transform 0.2s; }
+.filial-card.open .chevron { transform: rotate(180deg); }
+.sinf-list { border-top: 1px solid #f0f2f8; display: none; }
+.filial-card.open .sinf-list { display: block; }
+.sinf-row { display: flex; align-items: center; padding: 10px 18px; border-bottom: 1px solid #f5f7fa; gap: 10px; }
+.sinf-row:last-child { border-bottom: none; }
+.sinf-name  { font-size: 13px; font-weight: 700; width: 60px; color: #555; }
+.sinf-til   { width: 24px; text-align: center; font-size: 13px; }
+.bar-wrap   { flex: 1; background: #f0f2f8; border-radius: 20px; height: 8px; overflow: hidden; }
+.bar-fill   { height: 100%; border-radius: 20px; transition: width 0.4s; }
+.bar-green  { background: linear-gradient(90deg,#06d6a0,#06b65e); }
+.bar-yellow { background: linear-gradient(90deg,#fcd34d,#f59e0b); }
+.bar-red    { background: linear-gradient(90deg,#f87171,#e03060); }
+.sinf-nums  { font-size: 12px; font-weight: 700; min-width: 80px; text-align: right; white-space: nowrap; }
+.sinf-nums .free  { color: #06b65e; }
+.sinf-nums .total { color: #aaa; }
+.full-badge { background: #fee; color: #c62828; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.sinf-group { border-bottom: 1px solid #f5f7fa; }
+.sinf-group:last-child { border-bottom: none; }
+.sinf-group-label { padding: 8px 18px 2px; font-size: 12px; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 0.4px; }
+.sinf-sub-row { display: flex; align-items: center; padding: 6px 18px 6px 28px; gap: 10px; }
+.sub-flag { width: 20px; font-size: 13px; }
+.sub-label { font-size: 12px; font-weight: 700; color: #777; width: 36px; }
+.loading { text-align: center; padding: 60px; color: #aaa; }
+.spinner { width: 32px; height: 32px; border: 3px solid #e0e4ef; border-top-color: #4361ee; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+.error-box { background: #fff0f0; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 14px 18px; color: #c62828; font-size: 13px; margin: 12px 0; }
+.updated { text-align: center; color: #bbb; font-size: 12px; margin-top: 16px; padding-bottom: 24px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>&#128203; Bo'sh Joylar Dashboard</h1>
+    <p>Sotuv menejerlari uchun &middot; 2026-2027</p>
+  </div>
+  <button class="reload-btn" onclick="loadData()" id="reloadBtn"><span>&#8635;</span> Yangilash</button>
+</div>
+<div class="til-bar">
+  <span>Til:</span>
+  <button class="til-btn active" data-til="">Barchasi</button>
+  <button class="til-btn" data-til="Ozbek">&#127482;&#127487; O'zbek</button>
+  <button class="til-btn" data-til="Rus">&#127479;&#127482; Rus</button>
+</div>
+<div class="container">
+  <div id="loadingEl" class="loading"><div class="spinner"></div>Yuklanmoqda...</div>
+  <div id="errorEl" class="error-box" style="display:none"></div>
+  <div id="mainContent" style="display:none">
+    <div class="total-card">
+      <div>
+        <div class="label">Jami bo'sh joy</div>
+        <div class="big" id="totalFree">-</div>
+        <div class="sub" id="totalSub">-</div>
+      </div>
+      <div class="icon">&#128186;</div>
+    </div>
+    <div id="filialCards"></div>
+    <div class="updated">Oxirgi yangilanish: <span id="lastUpdate">-</span></div>
+  </div>
+</div>
+<script>
+const SHEET_ID = '1P-QqcLRI4G3Sx030SobDiwt7YyVDwhKz5vs4TaLCBJ4';
+const FILIAL_CONFIG = {
+  'Yunusobod': {
+    capacity: 394, izohCol: 17, sheet: 'Yunusobod filiali', gid: null,
+    sinfCapacity: { 7: 32, 8: 54, 9: 72, 10: 108, 11: 128 },
+    tilFixed: 'Ozbek'
+  },
+  'Minor': {
+    capacity: 476, izohCol: 17, sheet: 'Minor filiali', gid: null,
+    sinfCapacity: { 7: 64, 8: 96, 9: 98, 10: 142, 11: 76 },
+    tilFixed: 'Rus'
+  },
+  'Xalqlar dostligi': {
+    capacity: 144, izohCol: 14, sheet: "Xalqlar do'stligi filiali", gid: '1621312429',
+    sinfCapacity: { 9: 36, 10: 72, 11: 36 },
+    tilCol: 4,
+    sinfTilCap: {
+      9:  { Rus: 36, Ozbek: 0  },
+      10: { Rus: 36, Ozbek: 36 },
+      11: { Rus: 36, Ozbek: 0  }
+    }
+  },
+  'Beruniy': {
+    capacity: 100, izohCol: 12, sheet: 'Beruniy filiali', gid: null,
+    sinfCapacity: { 9: 32, 10: 32, 11: 36 },
+    tilFixed: 'Ozbek'
+  },
+};
+const TOTAL_CAP = Object.values(FILIAL_CONFIG).reduce((s,c)=>s+c.capacity,0);
+
+function normalizeTil(raw) {
+  const t = (raw || '').toLowerCase().trim();
+  if (/рус|rus/.test(t)) return 'Rus';
+  if (/ўзб|узб|uzb|zbek/.test(t)) return 'Ozbek';
+  return raw || '';
+}
+
+function csvUrl(cfg) {
+  if (cfg.gid) return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/export?format=csv&gid='+cfg.gid;
+  return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(cfg.sheet);
+}
+function parseCSV(text) {
+  const rows = [];
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const cols=[]; let cur='',inQ=false;
+    for (const ch of line) {
+      if(ch==='"') inQ=!inQ;
+      else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+      else cur+=ch;
+    }
+    cols.push(cur.trim()); rows.push(cols);
+  }
+  return rows;
+}
+
+let allStudents = [];
+let activeTil = '';
+
+async function loadData() {
+  const btn = document.getElementById('reloadBtn');
+  btn.classList.add('spinning');
+  document.getElementById('errorEl').style.display='none';
+  try {
+    const results = await Promise.all(Object.entries(FILIAL_CONFIG).map(([filial,cfg])=>
+      fetch(csvUrl(cfg)).then(r=>{if(!r.ok)throw new Error(filial+': '+r.status);return r.text();}).then(text=>({filial,text,cfg}))
+    ));
+    allStudents=[];
+    for(const {filial,text,cfg} of results){
+      const rows=parseCSV(text);
+      for(let i=1;i<rows.length;i++){
+        const r=rows[i];
+        const ism=(r[1]||'').trim(); if(!ism) continue;
+        const sinf=parseInt(r[2]||''); if(isNaN(sinf)) continue;
+        const izoh=(r[cfg.izohCol]||'').toLowerCase();
+        if(izoh.includes('bekor')) continue;
+        const tilRaw = cfg.tilFixed!==undefined ? cfg.tilFixed : (cfg.tilCol!==undefined ? (r[cfg.tilCol]||'') : '');
+        const til = normalizeTil(tilRaw);
+        allStudents.push({filial, sinf, til});
+      }
+    }
+    document.getElementById('loadingEl').style.display='none';
+    document.getElementById('mainContent').style.display='block';
+    render();
+    document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('uz-UZ');
+  } catch(e){
+    document.getElementById('loadingEl').style.display='none';
+    const errEl=document.getElementById('errorEl');
+    errEl.style.display='block';
+    errEl.textContent='Xatolik: '+e.message;
+  }
+  btn.classList.remove('spinning');
+}
+
+document.querySelectorAll('.til-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.til-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeTil=btn.dataset.til;
+    render();
+  });
+});
+
+function pctClass(p){return p>=90?'pct-red':p>=50?'pct-yellow':'pct-green';}
+function barClass(p){return p>=90?'bar-red':p>=50?'bar-yellow':'bar-green';}
+
+function render(){
+  let totalFree=0, totalEnrolled=0;
+  const container=document.getElementById('filialCards');
+  container.innerHTML='';
+
+  for(const [name,cfg] of Object.entries(FILIAL_CONFIG)){
+    const isMixed = cfg.tilCol !== undefined;
+    if(activeTil && cfg.tilFixed && cfg.tilFixed!==activeTil) continue;
+
+    const filStudents = allStudents.filter(s=>s.filial===name && (!activeTil||s.til===activeTil));
+    const enrolled = filStudents.length;
+
+    let cap = cfg.capacity;
+    if(activeTil && isMixed && cfg.sinfTilCap){
+      cap = Object.values(cfg.sinfTilCap).reduce((s,tc)=>s+(tc[activeTil]||0),0);
+    }
+
+    const free = Math.max(0, cap - enrolled);
+    totalFree += free;
+    totalEnrolled += enrolled;
+    const pct = cap>0 ? Math.round(enrolled/cap*100) : 0;
+
+    let tilTagHTML='';
+    if(cfg.tilFixed==='Ozbek') tilTagHTML='<span class="til-tag til-uzb">&#127482;&#127487; O\'zbek</span>';
+    else if(cfg.tilFixed==='Rus') tilTagHTML='<span class="til-tag til-rus">&#127479;&#127482; Rus</span>';
+    else tilTagHTML='<span class="til-tag til-mix">&#127482;&#127487;&#127479;&#127482; Aralash</span>';
+
+    let sinfHTML='';
+    if(cfg.sinfCapacity){
+      for(const [sinfStr] of Object.entries(cfg.sinfCapacity).sort((a,b)=>Number(a[0])-Number(b[0]))){
+        const s=parseInt(sinfStr);
+        if(!isMixed){
+          if(activeTil && cfg.tilFixed!==activeTil) continue;
+          const sCnt=allStudents.filter(st=>st.filial===name&&st.sinf===s).length;
+          const totalSinfCap=cfg.sinfCapacity[s];
+          const sFr=Math.max(0,totalSinfCap-sCnt);
+          const sPct=totalSinfCap>0?Math.round(sCnt/totalSinfCap*100):0;
+          const bc=barClass(sPct);
+          const emoji=cfg.tilFixed==='Rus'?'&#127479;&#127482;':'&#127482;&#127487;';
+          sinfHTML+='<div class="sinf-row"><div class="sinf-name">'+s+'-sinf</div><div class="sinf-til">'+emoji+'</div>'
+            +'<div class="bar-wrap"><div class="bar-fill '+bc+'" style="width:'+Math.min(sPct,100)+'%"></div></div>'
+            +'<div class="sinf-nums">'+(sFr>0?'<span class="free">'+sFr+" bo'sh</span> <span class=\"total\">/ "+totalSinfCap+'</span>':'<span class="full-badge">To\'ldi</span>')+'</div></div>';
+        } else {
+          const tilCaps = cfg.sinfTilCap?.[s] || {};
+          const tilList = activeTil ? (tilCaps[activeTil]>0?[activeTil]:[]) : Object.keys(tilCaps).filter(t=>tilCaps[t]>0);
+          if(tilList.length===0) continue;
+          if(tilList.length===1){
+            const t=tilList[0];
+            const sCap=tilCaps[t];
+            const sCnt=allStudents.filter(st=>st.filial===name&&st.sinf===s&&st.til===t).length;
+            const sFr=Math.max(0,sCap-sCnt);
+            const sPct=sCap>0?Math.round(sCnt/sCap*100):0;
+            const bc=barClass(sPct);
+            const emoji=t==='Rus'?'&#127479;&#127482;':'&#127482;&#127487;';
+            sinfHTML+='<div class="sinf-row"><div class="sinf-name">'+s+'-sinf</div><div class="sinf-til">'+emoji+'</div>'
+              +'<div class="bar-wrap"><div class="bar-fill '+bc+'" style="width:'+Math.min(sPct,100)+'%"></div></div>'
+              +'<div class="sinf-nums">'+(sFr>0?'<span class="free">'+sFr+" bo'sh</span> <span class=\"total\">/ "+sCap+'</span>':'<span class="full-badge">To\'ldi</span>')+'</div></div>';
+          } else {
+            let subRows='';
+            for(const t of ['Rus','Ozbek']){
+              const sCap=tilCaps[t]||0; if(!sCap) continue;
+              const sCnt=allStudents.filter(st=>st.filial===name&&st.sinf===s&&st.til===t).length;
+              const sFr=Math.max(0,sCap-sCnt);
+              const sPct=sCap>0?Math.round(sCnt/sCap*100):0;
+              const bc=barClass(sPct);
+              const emoji=t==='Rus'?'&#127479;&#127482;':'&#127482;&#127487;';
+              const tlbl=t==='Rus'?'Rus':"O'zb";
+              subRows+='<div class="sinf-sub-row"><div class="sub-flag">'+emoji+'</div><div class="sub-label">'+tlbl+'</div>'
+                +'<div class="bar-wrap"><div class="bar-fill '+bc+'" style="width:'+Math.min(sPct,100)+'%"></div></div>'
+                +'<div class="sinf-nums">'+(sFr>0?'<span class="free">'+sFr+" bo'sh</span> <span class=\"total\">/ "+sCap+'</span>':'<span class="full-badge">To\'ldi</span>')+'</div></div>';
+            }
+            sinfHTML+='<div class="sinf-group"><div class="sinf-group-label">'+s+'-sinf</div>'+subRows+'</div>';
+          }
+        }
+      }
+    }
+
+    const displayName = name==='Xalqlar dostligi' ? "Xalqlar do'stligi" : name;
+    const card=document.createElement('div');
+    card.className='filial-card';
+    card.innerHTML='<div class="filial-header" onclick="this.parentElement.classList.toggle(\'open\')">'
+      +'<div class="fh-left"><div class="filial-name">'+displayName+'</div>'+tilTagHTML+'</div>'
+      +'<div class="filial-meta"><div><div class="'+(free>0?'free-big':'free-zero')+'">'+free+'</div><div class="free-label">bo\'sh joy</div></div>'
+      +'<span class="pct-pill '+pctClass(pct)+'">'+pct+'% band</span><span class="chevron">&#9660;</span></div></div>'
+      +'<div class="sinf-list">'+(sinfHTML||'<div style="padding:12px 18px;color:#aaa;font-size:13px">Bu tilda sinf yo\'q</div>')+'</div>';
+    container.appendChild(card);
+  }
+
+  document.getElementById('totalFree').textContent=totalFree;
+  document.getElementById('totalSub').textContent=activeTil
+    ? totalEnrolled+' band &middot; '+activeTil+" tili bo'yicha"
+    : totalEnrolled+' band &middot; '+TOTAL_CAP+" jami o'rin";
+}
+
+loadData();
+</script>
+</body>
+</html>
