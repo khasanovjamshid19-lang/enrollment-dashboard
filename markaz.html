@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O'quv Markaz Dashboard · 2026-2027</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" crossorigin="anonymous"></script>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f8; color: #1a1a2e; min-height: 100vh; }
+  .header { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: white; padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .header h1 { font-size: 21px; font-weight: 800; letter-spacing: -0.3px; }
+  .header p  { font-size: 12px; opacity: 0.55; margin-top: 3px; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .updated-lbl { font-size: 12px; opacity: 0.5; }
+  .reload-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25); color: white; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .reload-btn:hover { background: rgba(255,255,255,0.22); }
+  .reload-btn.spinning span { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .container { padding: 22px 28px; max-width: 1160px; margin: 0 auto; }
+
+  /* Summary */
+  .summary-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 22px; }
+  @media(max-width:720px){ .summary-row { grid-template-columns: repeat(2,1fr); } }
+  .sum-card { background: white; border-radius: 16px; padding: 18px 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); text-align: center; position: relative; overflow: hidden; }
+  .sum-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; border-radius:16px 16px 0 0; }
+  .sum-card.c1::before { background: linear-gradient(90deg,#4361ee,#7b8cff); }
+  .sum-card.c2::before { background: linear-gradient(90deg,#06b6d4,#0891b2); }
+  .sum-card.c3::before { background: linear-gradient(90deg,#10b981,#059669); }
+  .sum-card.c4::before { background: linear-gradient(90deg,#f77f00,#fcbf49); }
+  .sum-val { font-size: 36px; font-weight: 900; margin: 8px 0 2px; }
+  .sum-label { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: .5px; }
+  .sum-sub   { font-size: 12px; color: #bbb; margin-top: 2px; }
+
+  /* Filial section */
+  .filial-section { margin-bottom: 28px; }
+  .filial-title { font-size: 16px; font-weight: 800; color: #1a1a2e; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .filial-title::after { content:''; flex:1; height:1.5px; background:#e8eaef; border-radius:2px; }
+
+  /* Guruh cards */
+  .guruh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+  .guruh-card { background: white; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); overflow: hidden; }
+  .guruh-header { padding: 16px 18px 12px; border-bottom: 1px solid #f0f2f8; display: flex; gap: 14px; align-items: flex-start; }
+  .guruh-chart-wrap { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
+  .guruh-chart-wrap canvas { width: 80px !important; height: 80px !important; }
+  .chart-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; pointer-events: none; }
+  .chart-center .pct { font-size: 15px; font-weight: 900; line-height: 1; }
+  .chart-center .lbl { font-size: 9px; color: #aaa; font-weight: 700; margin-top: 1px; }
+  .guruh-info { flex: 1; min-width: 0; }
+  .guruh-name { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+  .tag { padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .tag-uzb { background: #fef9c3; color: #854d0e; }
+  .tag-rus { background: #fee2e2; color: #991b1b; }
+  .tag-mix { background: #ede9fe; color: #5b21b6; }
+  .tag-filial { background: #e0e7ff; color: #3730a3; }
+  .spots-row { display: flex; gap: 8px; align-items: center; }
+  .spot-badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+  .spot-free { background: #dcfce7; color: #166534; }
+  .spot-occ  { background: #fee2e2; color: #991b1b; }
+  .spot-zero { background: #fee; color: #c62828; }
+  .prog-wrap { flex: 1; background: #f0f2f8; border-radius: 20px; height: 6px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg,#4361ee,#06d6a0); }
+  .prog-red  { background: linear-gradient(90deg,#f87171,#e03060); }
+  .prog-yel  { background: linear-gradient(90deg,#fcd34d,#f59e0b); }
+
+  /* Ustozlar */
+  .teachers-section { padding: 12px 18px; border-bottom: 1px solid #f0f2f8; background: #fafbff; }
+  .teachers-title { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+  .teacher-list { display: flex; flex-direction: column; gap: 5px; }
+  .teacher-row { display: flex; align-items: center; gap: 8px; }
+  .teacher-fan { font-size: 12px; color: #888; min-width: 80px; font-weight: 600; }
+  .teacher-ism { font-size: 13px; font-weight: 700; color: #1a1a2e; }
+
+  /* O'quvchilar */
+  .students-section { }
+  .students-toggle { padding: 10px 18px; font-size: 12px; font-weight: 700; color: #4361ee; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+  .students-toggle:hover { background: #f8f9ff; }
+  .toggle-icon { font-size: 11px; color: #ccc; transition: transform .2s; }
+  .guruh-card.open .toggle-icon { transform: rotate(180deg); }
+  .students-list { display: none; border-top: 1px solid #f0f2f8; max-height: 260px; overflow-y: auto; }
+  .guruh-card.open .students-list { display: block; }
+  .student-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 18px; border-bottom: 1px solid #f5f7fa; font-size: 13px; }
+  .student-row:last-child { border-bottom: none; }
+  .stu-num  { width: 24px; font-size: 12px; color: #bbb; font-weight: 700; }
+  .stu-name { font-weight: 600; flex: 1; }
+  .stu-holat-yangi { padding: 1px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; background: #dcfce7; color: #166534; }
+  .stu-holat-eski  { padding: 1px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; background: #e0e7ff; color: #3730a3; }
+
+  /* Loading / error */
+  .loading { text-align: center; padding: 60px; color: #aaa; }
+  .spinner { width: 36px; height: 36px; border: 3px solid #e0e4ef; border-top-color: #4361ee; border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
+  .error-box { background: #fff0f0; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 14px 18px; color: #c62828; font-size: 13px; margin: 16px 0; }
+  .no-students { padding: 18px; text-align: center; color: #ccc; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🎓 O'quv Markaz Dashboard</h1>
+    <p>Guruhlar bo'yicha to'lganlik · 2026-2027</p>
+  </div>
+  <div class="header-right">
+    <span class="updated-lbl" id="lastUpdate"></span>
+    <button class="reload-btn" onclick="loadAll()" id="reloadBtn"><span>↻</span> Yangilash</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="loadingEl" class="loading"><div class="spinner"></div>Yuklanmoqda...</div>
+  <div id="errorEl" class="error-box" style="display:none"></div>
+  <div id="mainContent" style="display:none">
+    <div class="summary-row">
+      <div class="sum-card c1"><div class="sum-label">Jami o'quvchi</div><div class="sum-val" id="sumEnrolled">0</div><div class="sum-sub">faol</div></div>
+      <div class="sum-card c2"><div class="sum-label">Jami sig'im</div><div class="sum-val" id="sumCap">0</div><div class="sum-sub">o'rin</div></div>
+      <div class="sum-card c3"><div class="sum-label">Bo'sh joy</div><div class="sum-val" id="sumFree" style="color:#10b981">0</div><div class="sum-sub">mavjud</div></div>
+      <div class="sum-card c4"><div class="sum-label">To'lganlik</div><div class="sum-val" id="sumPct">0%</div><div class="sum-sub">o'rtacha</div></div>
+    </div>
+    <div id="filialContainer"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// SOZLAMALAR — Varaq nomlarini shu yerda o'zgartiring
+// ═══════════════════════════════════════════════
+const SHEET_ID = '1RUkK1FYj4W-hO_wRZGx9lhn-jK-s3NJYPyn0VBfHxoc';
+
+// ismCol: B ustun = 1 (0-indexed)
+// izohCol: D ustun = 3 (holat/status)
+// Bekor bo'lgan o'quvchilarda D ustunda "bekor" so'zi bo'ladi
+const GURUH_CONFIG = [
+  {
+    filial: 'Minor',
+    nom: 'A level',
+    til: 'Aralash',
+    capacity: 32,
+    sheet: 'A level',     // ← VARAQ NOMINI SHUNGA O'ZGARTIRING
+    gid: null,
+    ismCol: 1,
+    izohCol: 3,
+    ustozlar: [
+      { fan: 'Kimyo',      ism: 'Sardor Zokirov' },
+      { fan: 'Biologiya',  ism: 'Islom Karimov'  }
+    ]
+  },
+  {
+    filial: 'Yunusobod',
+    nom: 'Iqtisod',
+    til: "O'zbek",
+    capacity: 32,
+    sheet: 'Iqtisod',     // ← VARAQ NOMINI SHUNGA O'ZGARTIRING
+    gid: null,
+    ismCol: 1,
+    izohCol: 3,
+    ustozlar: [
+      { fan: 'Matematika', ism: 'Samandar Murodqobilov' },
+      { fan: 'Ingliz tili', ism: 'Muxtarov Mahmud'     }
+    ]
+  },
+  {
+    filial: 'Akademiya',
+    nom: 'Huquq',
+    til: "O'zbek",
+    capacity: 32,
+    sheet: 'Huquq',       // ← VARAQ NOMINI SHUNGA O'ZGARTIRING
+    gid: null,
+    ismCol: 1,
+    izohCol: 3,
+    ustozlar: [
+      { fan: 'Huquq',      ism: 'Nurasqan Jaqsilikov' },
+      { fan: 'Ingliz tili', ism: 'Mahmud Nabiyev'      }
+    ]
+  },
+  {
+    filial: 'Akademiya',
+    nom: 'Meditsina',
+    til: 'Rus',
+    capacity: 32,
+    sheet: 'Meditsina',   // ← VARAQ NOMINI SHUNGA O'ZGARTIRING
+    gid: '1108294685',    // shu varaq uchun GID bor
+    ismCol: 1,
+    izohCol: 3,
+    ustozlar: [
+      { fan: 'Kimyo',     ism: 'Izzat Ibragimov' },
+      { fan: 'Biologiya', ism: 'Izzat Ibragimov' }
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════
+
+function csvUrl(g) {
+  if (g.gid) return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${g.gid}`;
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(g.sheet)}`;
+}
+
+function parseCSV(text) {
+  const rows = [];
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const cols = []; let cur = '', inQ = false;
+    for (const ch of line) {
+      if (ch==='"') inQ=!inQ;
+      else if (ch===','&&!inQ) { cols.push(cur.trim()); cur=''; }
+      else cur+=ch;
+    }
+    cols.push(cur.trim()); rows.push(cols);
+  }
+  return rows;
+}
+
+function normalizeHolat(raw) {
+  const t = (raw||'').toLowerCase().trim();
+  if (t.includes('yangi')) return 'yangi';
+  if (t.includes('eski') || t.includes('qayta')) return 'eski';
+  return '';
+}
+
+const charts = {};
+
+async function loadAll() {
+  const btn = document.getElementById('reloadBtn');
+  btn.classList.add('spinning');
+  document.getElementById('errorEl').style.display='none';
+  try {
+    const results = await Promise.all(
+      GURUH_CONFIG.map((g, idx) =>
+        fetch(csvUrl(g))
+          .then(r => { if(!r.ok) throw new Error(`${g.nom}: HTTP ${r.status}`); return r.text(); })
+          .then(text => ({ idx, g, rows: parseCSV(text) }))
+          .catch(e => ({ idx, g, rows: [], error: e.message }))
+      )
+    );
+
+    // Natijalarni config ga qo'shamiz
+    results.forEach(({ idx, rows, error }) => {
+      GURUH_CONFIG[idx]._rows = rows;
+      GURUH_CONFIG[idx]._error = error || null;
+    });
+
+    document.getElementById('loadingEl').style.display='none';
+    document.getElementById('mainContent').style.display='block';
+    render();
+    document.getElementById('lastUpdate').textContent = 'Yangilangan: ' + new Date().toLocaleTimeString('uz-UZ');
+  } catch(e) {
+    document.getElementById('loadingEl').style.display='none';
+    const el = document.getElementById('errorEl');
+    el.style.display='block'; el.textContent='⚠️ Xatolik: ' + e.message;
+  }
+  btn.classList.remove('spinning');
+}
+
+function getStudents(g) {
+  if (!g._rows || g._rows.length < 2) return [];
+  return g._rows.slice(1).filter(r => {
+    const ism = (r[g.ismCol]||'').trim();
+    if (!ism) return false;
+    const izoh = (r[g.izohCol]||'').toLowerCase();
+    if (izoh.includes('bekor')) return false;
+    return true;
+  }).map(r => ({
+    ism: (r[g.ismCol]||'').trim(),
+    holat: normalizeHolat(r[g.izohCol]||'')
+  }));
+}
+
+function pctColor(pct) {
+  if (pct >= 90) return '#e03060';
+  if (pct >= 60) return '#f59e0b';
+  return '#10b981';
+}
+function progClass(pct) {
+  if (pct >= 90) return 'prog-red';
+  if (pct >= 60) return 'prog-yel';
+  return '';
+}
+
+function drawChart(canvasId, enrolled, capacity) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  const pct = capacity > 0 ? Math.min(enrolled / capacity, 1) : 0;
+  const free = Math.max(0, capacity - enrolled);
+  const color = pctColor(Math.round(pct*100));
+
+  if (charts[canvasId]) charts[canvasId].destroy();
+  charts[canvasId] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [enrolled, Math.max(0,free)],
+        backgroundColor: [color, '#f0f2f8'],
+        borderWidth: 0,
+        hoverOffset: 0
+      }]
+    },
+    options: {
+      cutout: '72%',
+      animation: { duration: 600 },
+      plugins: { legend: { display: false }, tooltip: { enabled: false } }
+    }
+  });
+}
+
+function render() {
+  const container = document.getElementById('filialContainer');
+  container.innerHTML = '';
+
+  // Filiallarga guruhlash
+  const filialMap = {};
+  GURUH_CONFIG.forEach(g => {
+    if (!filialMap[g.filial]) filialMap[g.filial] = [];
+    filialMap[g.filial].push(g);
+  });
+
+  let totalEnrolled = 0, totalCap = 0;
+
+  for (const [filial, guruhlar] of Object.entries(filialMap)) {
+    const section = document.createElement('div');
+    section.className = 'filial-section';
+    section.innerHTML = `<div class="filial-title">🏫 ${filial} filiali</div><div class="guruh-grid" id="grid-${filial}"></div>`;
+    container.appendChild(section);
+
+    const grid = section.querySelector('.guruh-grid');
+
+    guruhlar.forEach((g, gi) => {
+      const students = getStudents(g);
+      const enrolled = students.length;
+      const pct = g.capacity > 0 ? Math.round(enrolled / g.capacity * 100) : 0;
+      const free = Math.max(0, g.capacity - enrolled);
+      totalEnrolled += enrolled;
+      totalCap += g.capacity;
+
+      const tilTag = g.til === "O'zbek"
+        ? `<span class="tag tag-uzb">🇺🇿 O'zbek</span>`
+        : g.til === 'Rus'
+          ? `<span class="tag tag-rus">🇷🇺 Rus</span>`
+          : `<span class="tag tag-mix">🇺🇿🇷🇺 Aralash</span>`;
+
+      const canvasId = `chart-${filial}-${gi}`;
+      const teacherRows = g.ustozlar.map(u =>
+        `<div class="teacher-row"><span class="teacher-fan">${u.fan}</span><span class="teacher-ism">${u.ism}</span></div>`
+      ).join('');
+
+      const yangi = students.filter(s=>s.holat==='yangi').length;
+      const eski  = students.filter(s=>s.holat==='eski').length;
+
+      const card = document.createElement('div');
+      card.className = 'guruh-card';
+      card.innerHTML = `
+        <div class="guruh-header">
+          <div class="guruh-chart-wrap">
+            <canvas id="${canvasId}"></canvas>
+            <div class="chart-center">
+              <div class="pct" style="color:${pctColor(pct)}">${pct}%</div>
+              <div class="lbl">band</div>
+            </div>
+          </div>
+          <div class="guruh-info">
+            <div class="guruh-name">${g.nom}</div>
+            <div class="tags">
+              ${tilTag}
+              <span class="tag tag-filial">${filial}</span>
+            </div>
+            <div class="spots-row">
+              ${free > 0
+                ? `<span class="spot-badge spot-free">${free} bo'sh</span>`
+                : `<span class="spot-badge spot-zero">To'ldi</span>`}
+              <span class="spot-badge spot-occ">${enrolled}/${g.capacity}</span>
+              <div class="prog-wrap"><div class="prog-fill ${progClass(pct)}" style="width:${Math.min(pct,100)}%"></div></div>
+            </div>
+            ${yangi||eski ? `<div style="font-size:11px;color:#aaa;margin-top:5px;">${yangi?'🆕 '+yangi+' yangi':''} ${eski?'🔄 '+eski+' eski':''}</div>` : ''}
+            ${g._error ? `<div style="font-size:11px;color:#e03;margin-top:4px;">⚠️ ${g._error}</div>` : ''}
+          </div>
+        </div>
+        <div class="teachers-section">
+          <div class="teachers-title">📚 Fan ustozlari</div>
+          <div class="teacher-list">${teacherRows}</div>
+        </div>
+        <div class="students-section">
+          <div class="students-toggle" onclick="toggleStudents(this)">
+            O'quvchilar ro'yxati (${enrolled} ta)
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div class="students-list">
+            ${students.length === 0
+              ? `<div class="no-students">Hozircha o'quvchi yo'q</div>`
+              : students.map((s,i) => `
+                <div class="student-row">
+                  <span class="stu-num">${i+1}</span>
+                  <span class="stu-name">${s.ism}</span>
+                  ${s.holat==='yangi' ? '<span class="stu-holat-yangi">Yangi</span>' : s.holat==='eski' ? '<span class="stu-holat-eski">Eski</span>' : ''}
+                </div>`).join('')
+            }
+          </div>
+        </div>`;
+      grid.appendChild(card);
+
+      // Chart keyinroq chizish (DOM ready bo'lgandan so'ng)
+      setTimeout(() => drawChart(canvasId, enrolled, g.capacity), 50);
+    });
+  }
+
+  // Summary
+  const free = Math.max(0, totalCap - totalEnrolled);
+  const pct = totalCap > 0 ? Math.round(totalEnrolled / totalCap * 100) : 0;
+  document.getElementById('sumEnrolled').textContent = totalEnrolled;
+  document.getElementById('sumCap').textContent = totalCap;
+  document.getElementById('sumFree').textContent = free;
+  document.getElementById('sumPct').textContent = pct + '%';
+}
+
+function toggleStudents(toggle) {
+  const card = toggle.closest('.guruh-card');
+  card.classList.toggle('open');
+}
+
+loadAll();
+</script>
+</body>
+</html>
