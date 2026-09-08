@@ -12,7 +12,7 @@
   .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
   .header-left h1 { font-size: 20px; font-weight: 700; }
   .header-left p  { font-size: 12px; opacity: 0.6; margin-top: 3px; }
-  .reload-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25); color: white; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+  .reload-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25); color: white; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
   .reload-btn:hover { background: rgba(255,255,255,0.22); }
   .reload-btn.spinning span { display: inline-block; animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -86,6 +86,8 @@
   .holat-yangi { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#dcfce7; color:#166534; }
   .holat-eski  { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#dbeafe; color:#1e40af; }
   .holat-unknown { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#f3f4f6; color:#6b7280; }
+  .til-uzb { display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700; background:#fef9c3; color:#854d0e; }
+  .til-rus { display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700; background:#fee2e2; color:#991b1b; }
   .student-table { width:100%; border-collapse:collapse; font-size:13px; }
   .student-table th { text-align:left; padding:7px 10px; font-size:11px; font-weight:700; color:#999; text-transform:uppercase; letter-spacing:.5px; border-bottom:2px solid #f0f2f8; }
   .student-table td { padding:9px 10px; border-bottom:1px solid #f5f7fa; }
@@ -137,6 +139,14 @@
           <option value="">Barcha holat</option>
           <option value="Yangi">🟢 Yangi</option>
           <option value="Eski">🔵 Eski</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Til</label>
+        <select id="tilFilter" onchange="update()">
+          <option value="">Barcha til</option>
+          <option value="O'zbek">🇺🇿 O'zbek</option>
+          <option value="Rus">🇷🇺 Rus</option>
         </select>
       </div>
       <div class="filter-group" id="capGroup" style="margin-left:auto">
@@ -222,36 +232,35 @@ const SHEET_ID = '1P-QqcLRI4G3Sx030SobDiwt7YyVDwhKz5vs4TaLCBJ4';
 
 const FILIAL_CONFIG = {
   'Yunusobod': {
-    capacity: 394,
-    izohCol: 17, sheet: 'Yunusobod filiali', gid: null,
-    sinfCapacity: { 7: 32, 8: 54, 9: 72, 10: 108, 11: 128 }
+    capacity: 394, izohCol: 17, sheet: 'Yunusobod filiali', gid: null,
+    sinfCapacity: { 7: 32, 8: 54, 9: 72, 10: 108, 11: 128 },
+    tilFixed: "O'zbek"
   },
   'Minor': {
-    capacity: 476,                           // 64+96+98+142+76
-    izohCol: 17, sheet: 'Minor filiali', gid: null,
-    sinfCapacity: { 7: 64, 8: 96, 9: 98, 10: 142, 11: 76 }
+    capacity: 476, izohCol: 17, sheet: 'Minor filiali', gid: null,
+    sinfCapacity: { 7: 64, 8: 96, 9: 98, 10: 142, 11: 76 },
+    tilFixed: 'Rus'
   },
   "Xalqlar do'stligi": {
-    capacity: 144,
-    izohCol: 14, sheet: "Xalqlar do'stligi filiali", gid: '1621312429',
-    sinfCapacity: { 9: 36, 10: 72, 11: 36 }
+    capacity: 144, izohCol: 14, sheet: "Xalqlar do'stligi filiali", gid: '1621312429',
+    sinfCapacity: { 9: 36, 10: 72, 11: 36 },
+    tilCol: 4   // E ustun (0-indexed)
   },
   'Beruniy': {
-    capacity: 100,
-    izohCol: 12, sheet: 'Beruniy filiali', gid: null,
-    sinfCapacity: { 9: 32, 10: 32, 11: 36 }
+    capacity: 100, izohCol: 12, sheet: 'Beruniy filiali', gid: null,
+    sinfCapacity: { 9: 32, 10: 32, 11: 36 },
+    tilFixed: "O'zbek"
   },
 };
 
-const TOTAL_CAPACITY = Object.values(FILIAL_CONFIG).reduce((s, c) => s + c.capacity, 0);
-// 394 + 476 + 144 + 100 = 1114
+const TOTAL_CAPACITY = Object.values(FILIAL_CONFIG).reduce((s,c)=>s+c.capacity,0);
 
 function csvUrl(cfg) {
   if (cfg.gid) return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${cfg.gid}`;
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(cfg.sheet)}`;
 }
 function getPredefinedCap(filial, sinf) {
-  if (!filial || !sinf) return null;
+  if (!filial||!sinf) return null;
   const sc = FILIAL_CONFIG[filial]?.sinfCapacity;
   if (!sc) return null;
   const v = sc[parseInt(sinf)];
@@ -260,8 +269,8 @@ function getPredefinedCap(filial, sinf) {
 function getSeatCapacity() {
   const p = document.getElementById('capPreset');
   if (!p) return 24;
-  if (p.value === 'custom') { const n = parseInt(document.getElementById('capCustom').value); return isNaN(n)||n<1?24:n; }
-  return parseInt(p.value) || 24;
+  if (p.value==='custom') { const n=parseInt(document.getElementById('capCustom').value); return isNaN(n)||n<1?24:n; }
+  return parseInt(p.value)||24;
 }
 function onCapPreset() {
   const v = document.getElementById('capPreset').value;
@@ -272,21 +281,19 @@ function onCapPreset() {
 }
 function getCapacity(filial, sinf) {
   const pre = getPredefinedCap(filial, sinf);
-  if (pre !== null) return pre;
-  if (filial && sinf) return getSeatCapacity();
-  if (filial) return FILIAL_CONFIG[filial]?.capacity || 0;
+  if (pre!==null) return pre;
+  if (filial&&sinf) return getSeatCapacity();
+  if (filial) return FILIAL_CONFIG[filial]?.capacity||0;
   return TOTAL_CAPACITY;
 }
 function getFilialCapForSinf(filialName, sinfF) {
   const cfg = FILIAL_CONFIG[filialName];
   if (!cfg) return 0;
-  if (sinfF) { const sc = cfg.sinfCapacity?.[parseInt(sinfF)]; return sc !== undefined ? sc : cfg.capacity; }
+  if (sinfF) { const sc=cfg.sinfCapacity?.[parseInt(sinfF)]; return sc!==undefined?sc:cfg.capacity; }
   return cfg.capacity;
 }
 function chipClass(pct) {
-  if (pct >= 90) return 'chip-full';
-  if (pct >= 50) return 'chip-partial';
-  return 'chip-low';
+  return pct>=90?'chip-full':pct>=50?'chip-partial':'chip-low';
 }
 
 const CANCEL_KEYWORDS = ['bekor'];
@@ -294,13 +301,13 @@ let allStudents = [];
 let charts = {};
 
 function parseCSV(text) {
-  const rows = [];
+  const rows=[];
   for (const line of text.split(/\r?\n/)) {
     if (!line.trim()) continue;
-    const cols = []; let cur='', inQ=false;
+    const cols=[]; let cur='',inQ=false;
     for (const ch of line) {
-      if (ch==='"') inQ=!inQ;
-      else if (ch===','&&!inQ){cols.push(cur.trim());cur='';}
+      if(ch==='"') inQ=!inQ;
+      else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
       else cur+=ch;
     }
     cols.push(cur.trim()); rows.push(cols);
@@ -315,17 +322,21 @@ async function loadData() {
   document.getElementById('errorEl').style.display='none';
   try {
     const results = await Promise.all(Object.entries(FILIAL_CONFIG).map(([filial,cfg])=>
-      fetch(csvUrl(cfg)).then(r=>{if(!r.ok)throw new Error(`${filial}: HTTP ${r.status}`);return r.text();}).then(text=>({filial,text,cfg}))
+      fetch(csvUrl(cfg)).then(r=>{if(!r.ok)throw new Error(`${filial}: ${r.status}`);return r.text();}).then(text=>({filial,text,cfg}))
     ));
     allStudents=[];
     for (const {filial,text,cfg} of results) {
       const rows=parseCSV(text);
       for (let i=1;i<rows.length;i++) {
-        const r=rows[i]; const ism=(r[1]||'').trim(); if(!ism) continue;
+        const r=rows[i];
+        const ism=(r[1]||'').trim(); if(!ism) continue;
         const sinf=parseInt(r[2]||''); if(isNaN(sinf)) continue;
         const holat=(r[3]||'').trim();
         if(isCancelled((r[cfg.izohCol]||'').toLowerCase())) continue;
-        allStudents.push({filial,sinf,ism,holat});
+        // Til aniqlash
+        let til = cfg.tilFixed || '';
+        if (cfg.tilCol !== undefined) til = (r[cfg.tilCol]||'').trim();
+        allStudents.push({filial, sinf, ism, holat, til});
       }
     }
     document.getElementById('loadingEl').style.display='none';
@@ -337,7 +348,7 @@ async function loadData() {
     document.getElementById('loadingEl').style.display='none';
     const errEl=document.getElementById('errorEl');
     errEl.style.display='block';
-    errEl.innerHTML=`⚠️ Xatolik: ${e.message||e}<br><small>Google Sheets "Anyone with the link can view" bo'lishi kerak.</small>`;
+    errEl.innerHTML=`⚠️ Xatolik: ${e.message||e}`;
   }
   btn.classList.remove('spinning');
 }
@@ -354,24 +365,33 @@ function initCharts(){
 }
 function updChart(chart,val,total){chart.data.datasets[0].data=[val,Math.max(0,total-val)];chart.update();}
 
-function getFiltered(filial,sinf,holat){
-  return allStudents.filter(s=>(!filial||s.filial===filial)&&(!sinf||s.sinf===parseInt(sinf))&&(!holat||s.holat===holat));
+function getFiltered(filial,sinf,holat,til) {
+  return allStudents.filter(s=>
+    (!filial||s.filial===filial)&&
+    (!sinf||s.sinf===parseInt(sinf))&&
+    (!holat||s.holat===holat)&&
+    (!til||s.til===til)
+  );
 }
 
-function update(){
+function update() {
   const filial=document.getElementById('filialFilter').value;
   const sinf=document.getElementById('sinfFilter').value;
   const holat=document.getElementById('holatFilter').value;
+  const til=document.getElementById('tilFilter').value;
+
   const pre=getPredefinedCap(filial,sinf);
   document.getElementById('capGroup').style.display=pre!==null?'none':'flex';
   document.getElementById('capFixed').style.display=pre!==null?'flex':'none';
   if(pre!==null) document.getElementById('capFixedBadge').innerHTML=`<span class="cap-preset-badge">📐 ${pre} o'rin (belgilangan)</span>`;
-  const filtered=getFiltered(filial,sinf,holat);
+
+  const filtered=getFiltered(filial,sinf,holat,til);
   const enrolled=filtered.length;
   const yangiCnt=filtered.filter(s=>s.holat==='Yangi').length;
   const eskiCnt=filtered.filter(s=>s.holat==='Eski').length;
   const capacity=getCapacity(filial,sinf);
   const pct=capacity>0?Math.round(enrolled/capacity*100):0;
+
   document.getElementById('valEnrolled').textContent=enrolled;
   document.getElementById('valYangi').textContent=yangiCnt;
   document.getElementById('valEski').textContent=eskiCnt;
@@ -380,14 +400,16 @@ function update(){
   document.getElementById('subYangi').textContent=enrolled>0?`${Math.round(yangiCnt/enrolled*100)}% yangi`:'—';
   document.getElementById('subEski').textContent=enrolled>0?`${Math.round(eskiCnt/enrolled*100)}% eski`:'—';
   document.getElementById('subFill').textContent=pct>=80?"🔴 Deyarli to'ldi":pct>=50?"🟡 Yarim to'lgan":'🟢 Ochiq';
+
   updChart(charts.enrolled,enrolled,capacity);
   updChart(charts.yangi,yangiCnt,Math.max(enrolled,1));
   updChart(charts.eski,eskiCnt,Math.max(enrolled,1));
   updChart(charts.fill,pct,100);
+
   renderClassroom(filial,sinf,enrolled);
-  renderFilialTable(sinf,holat);
-  renderChips(filial,sinf,holat);
-  renderStudentList(filial,sinf,holat);
+  renderFilialTable(sinf,holat,til);
+  renderChips(filial,sinf,holat,til);
+  renderStudentList(filial,sinf,holat,til);
 }
 
 function renderClassroom(filial,sinf,enrolled){
@@ -416,25 +438,40 @@ function renderClassroom(filial,sinf,enrolled){
   gridEl.innerHTML=html;
 }
 
-function renderFilialTable(sinfF,holatF){
+function tilBadge(til){
+  if(!til) return '';
+  if(til==="O'zbek") return `<span class="til-uzb">🇺🇿 O'zbek</span>`;
+  if(til==='Rus')    return `<span class="til-rus">🇷🇺 Rus</span>`;
+  return `<span class="til-uzb">${til}</span>`;
+}
+
+function renderFilialTable(sinfF,holatF,tilF){
   let html='';
-  for(const [f] of Object.entries(FILIAL_CONFIG)){
-    const n=getFiltered(f,sinfF,holatF).length; const cap=getFilialCapForSinf(f,sinfF);
+  for(const [f,cfg] of Object.entries(FILIAL_CONFIG)){
+    const n=getFiltered(f,sinfF,holatF,tilF).length;
+    const cap=getFilialCapForSinf(f,sinfF);
     const fr=Math.max(0,cap-n); const pct=cap>0?Math.round(n/cap*100):0;
-    html+=`<tr><td class="filial-name">${f}</td><td style="font-weight:700;color:#4361ee">${n}</td><td style="font-weight:700;color:#06a87e">${fr}</td><td><span class="badge ${pct>=90?'badge-full':'badge-open'}">${pct>=90?"To'ldi":'Ochiq'}</span></td><td><div style="display:flex;align-items:center;gap:6px"><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pct,100)}%"></div></div><span style="font-size:12px;color:#888">${pct}%</span></div></td></tr>`;
+    const tilInfo = cfg.tilFixed ? tilBadge(cfg.tilFixed) : '<span class="til-uzb">🇺🇿</span><span class="til-rus">🇷🇺</span>';
+    html+=`<tr>
+      <td class="filial-name">${f} <span style="font-size:11px;font-weight:400">${tilInfo}</span></td>
+      <td style="font-weight:700;color:#4361ee">${n}</td>
+      <td style="font-weight:700;color:#06a87e">${fr}</td>
+      <td><span class="badge ${pct>=90?'badge-full':'badge-open'}">${pct>=90?"To'ldi":'Ochiq'}</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pct,100)}%"></div></div><span style="font-size:12px;color:#888">${pct}%</span></div></td>
+    </tr>`;
   }
   document.getElementById('filialBody').innerHTML=html;
 }
 
-function renderChips(filialF,sinfF,holatF){
+function renderChips(filialF,sinfF,holatF,tilF){
   const wrap=document.getElementById('classChips'); const subEl=document.getElementById('chipsSubtitle');
   const combos={};
   allStudents.forEach(s=>{
-    if(filialF&&s.filial!==filialF) return; if(sinfF&&s.sinf!==parseInt(sinfF)) return; if(holatF&&s.holat!==holatF) return;
+    if(filialF&&s.filial!==filialF) return; if(sinfF&&s.sinf!==parseInt(sinfF)) return;
+    if(holatF&&s.holat!==holatF) return; if(tilF&&s.til!==tilF) return;
     const k=`${s.filial}|${s.sinf}`;
     if(!combos[k]) combos[k]={filial:s.filial,sinf:s.sinf,count:0,yangi:0,eski:0};
-    combos[k].count++;
-    if(s.holat==='Yangi') combos[k].yangi++; else if(s.holat==='Eski') combos[k].eski++;
+    combos[k].count++; if(s.holat==='Yangi') combos[k].yangi++; else if(s.holat==='Eski') combos[k].eski++;
   });
   const keys=Object.keys(combos).sort((a,b)=>{const ca=combos[a],cb=combos[b];return ca.filial!==cb.filial?ca.filial.localeCompare(cb.filial):ca.sinf-cb.sinf;});
   subEl.textContent=`${keys.length} ta kombinatsiya · chipga bosing · 🔴 ≥90% · 🟡 ≥50% · 🟢 <50%`;
@@ -442,22 +479,24 @@ function renderChips(filialF,sinfF,holatF){
   wrap.innerHTML=keys.map(k=>{
     const c=combos[k]; const pre=getPredefinedCap(c.filial,c.sinf); const cap2=pre!==null?pre:getSeatCapacity();
     const pct=Math.round(c.count/cap2*100); const cls=chipClass(pct); const ov=c.count>cap2?` ⚠️+${c.count-cap2}`:'';
-    return `<div class="chip ${cls}" onclick="selectCombo('${c.filial}','${c.sinf}')">${c.filial} · ${c.sinf}-sinf — ${c.count}/${cap2}${ov}<span style="opacity:.7;font-size:10px;margin-left:4px">🟢${c.yangi} 🔵${c.eski}</span></div>`;
+    const cfg=FILIAL_CONFIG[c.filial]; const tilEmoji=cfg?.tilFixed==='Rus'?'🇷🇺':cfg?.tilFixed==="O'zbek"?'🇺🇿':'🇺🇿🇷🇺';
+    return `<div class="chip ${cls}" onclick="selectCombo('${c.filial}','${c.sinf}')">${tilEmoji} ${c.filial} · ${c.sinf}-sinf — ${c.count}/${cap2}${ov}<span style="opacity:.7;font-size:10px;margin-left:4px">🟢${c.yangi} 🔵${c.eski}</span></div>`;
   }).join('');
 }
 
-function renderStudentList(filial,sinf,holat){
+function renderStudentList(filial,sinf,holat,til){
   const card=document.getElementById('studentListCard');
   const titleEl=document.getElementById('studentListTitle');
   const subEl=document.getElementById('studentListSubtitle');
   const bodyEl=document.getElementById('studentListBody');
   if(!filial||!sinf){card.style.display='none';return;}
-  const students=getFiltered(filial,sinf,holat);
+  const students=getFiltered(filial,sinf,holat,til);
   card.style.display='block';
-  titleEl.textContent=`${filial} · ${sinf}-sinf${holat?' · '+holat:''} — O'quvchilar ro'yxati`;
+  titleEl.textContent=`${filial} · ${sinf}-sinf${holat?' · '+holat:''}${til?' · '+til:''} — O'quvchilar ro'yxati`;
   subEl.textContent=`Jami ${students.length} ta o'quvchi`;
   if(!students.length){bodyEl.innerHTML="<div class='no-data'>Hech qanday o'quvchi topilmadi</div>";return;}
-  bodyEl.innerHTML=`<table class="student-table"><thead><tr><th>#</th><th>Ism-familiya</th><th>Holat</th></tr></thead><tbody>${students.map((s,i)=>`<tr><td class="s-num">${i+1}</td><td class="s-name">${s.ism}</td><td>${s.holat==='Yangi'?'<span class="holat-yangi">Yangi</span>':s.holat==='Eski'?'<span class="holat-eski">Eski</span>':`<span class="holat-unknown">${s.holat||'—'}</span>`}</td></tr>`).join('')}</tbody></table>`;
+  const showTil = FILIAL_CONFIG[filial]?.tilCol !== undefined;
+  bodyEl.innerHTML=`<table class="student-table"><thead><tr><th>#</th><th>Ism-familiya</th><th>Holat</th>${showTil?'<th>Til</th>':''}</tr></thead><tbody>${students.map((s,i)=>`<tr><td class="s-num">${i+1}</td><td class="s-name">${s.ism}</td><td>${s.holat==='Yangi'?'<span class="holat-yangi">Yangi</span>':s.holat==='Eski'?'<span class="holat-eski">Eski</span>':`<span class="holat-unknown">${s.holat||'—'}</span>`}</td>${showTil?`<td>${tilBadge(s.til)}</td>`:''}</tr>`).join('')}</tbody></table>`;
 }
 
 function selectCombo(filial,sinf){
