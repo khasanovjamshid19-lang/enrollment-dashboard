@@ -9,7 +9,6 @@
   :root { color-scheme: light; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f8; color: #1a1a2e; min-height: 100vh; }
-
   .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
   .header-left h1 { font-size: 20px; font-weight: 700; }
   .header-left p  { font-size: 12px; opacity: 0.6; margin-top: 3px; }
@@ -17,21 +16,16 @@
   .reload-btn:hover { background: rgba(255,255,255,0.22); }
   .reload-btn.spinning span { display: inline-block; animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
   .info-banner { background: #fffbeb; border: 1.5px solid #fcd34d; border-radius: 10px; padding: 10px 16px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #78350f; }
-
   .container { padding: 20px 24px; max-width: 1100px; margin: 0 auto; }
-
   .loading-overlay { text-align: center; padding: 60px; color: #888; }
   .loading-overlay .spinner { width: 36px; height: 36px; border: 3px solid #e0e4ef; border-top-color: #4361ee; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
   .error-box { background: #fff0f0; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 16px 20px; color: #c62828; font-size: 14px; margin: 20px 0; }
-
   .filters { background: white; border-radius: 14px; padding: 14px 20px; margin-bottom: 18px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
   .filter-group { display: flex; flex-direction: column; gap: 4px; }
   .filter-group label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.6px; }
   .filter-group select { border: 1.5px solid #e0e4ef; border-radius: 8px; padding: 7px 12px; font-size: 14px; background: #f8f9fb; color: #1a1a2e; cursor: pointer; outline: none; min-width: 140px; }
   .filter-group select:focus { border-color: #4361ee; }
-
   .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
   .stat-card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; overflow: hidden; }
   .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; border-radius:16px 16px 0 0; }
@@ -46,12 +40,10 @@
   .stat-center .small { font-size:10px; color:#aaa; font-weight:600; margin-top:1px; }
   .stat-label { font-size:11px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.5px; text-align:center; }
   .stat-sub   { font-size:11px; color:#aaa; text-align:center; }
-
   .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   .card { background: white; border-radius: 14px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
   .card h2 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
   .card .subtitle { font-size: 12px; color: #999; margin-bottom: 14px; }
-
   .classroom-info { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
   .ci-badge  { padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
   .ci-enrolled { background:#fee; color:#e03; }
@@ -69,7 +61,6 @@
   .leg-dot   { width:11px; height:11px; border-radius:3px; }
   .leg-occ   { background:#e03060; }
   .leg-free  { background:#06d6a0; }
-
   .filial-table { width:100%; border-collapse:collapse; font-size:13px; }
   .filial-table th { text-align:left; padding:7px 10px; font-size:11px; font-weight:700; color:#999; text-transform:uppercase; letter-spacing:.5px; border-bottom:2px solid #f0f2f8; }
   .filial-table td { padding:9px 10px; border-bottom:1px solid #f5f7fa; }
@@ -80,27 +71,21 @@
   .badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:600; }
   .badge-full { background:#fee; color:#c62828; }
   .badge-open { background:#e6faf5; color:#1b7a5e; }
-
   .class-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
   .chip { padding:4px 11px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; border:1.5px solid transparent; transition:all .15s; }
-  /* ≥90% → qizil, ≥50% → sariq, <50% → yashil */
   .chip-full    { background:#fee;     color:#c62828; border-color:#fca5a5; }
   .chip-partial { background:#fef3c7;  color:#92400e; border-color:#fcd34d; }
   .chip-low     { background:#e6faf5;  color:#065f46; border-color:#6ee7b7; }
   .chip:hover   { transform:translateY(-2px); box-shadow:0 3px 8px rgba(0,0,0,0.1); }
-
   .no-data { text-align:center; padding:36px; color:#ccc; font-size:13px; }
   .overflow-box { background:linear-gradient(135deg,#fff0f0,#ffe4e4); border:2px solid #f87171; border-radius:12px; padding:14px 18px; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
   .overflow-box .ov-icon { font-size:24px; }
   .overflow-box .ov-big  { font-size:18px; font-weight:800; color:#c62828; }
   .overflow-box .ov-sub  { font-size:12px; color:#991b1b; margin-top:2px; }
-
   .cap-preset-badge { display:inline-flex; align-items:center; gap:5px; background:#ede9fe; color:#5b21b6; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:700; }
-
   .holat-yangi { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#dcfce7; color:#166534; }
   .holat-eski  { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#dbeafe; color:#1e40af; }
   .holat-unknown { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#f3f4f6; color:#6b7280; }
-
   .student-table { width:100%; border-collapse:collapse; font-size:13px; }
   .student-table th { text-align:left; padding:7px 10px; font-size:11px; font-weight:700; color:#999; text-transform:uppercase; letter-spacing:.5px; border-bottom:2px solid #f0f2f8; }
   .student-table td { padding:9px 10px; border-bottom:1px solid #f5f7fa; }
@@ -108,32 +93,22 @@
   .student-table tr:hover td { background:#f8f9fb; }
   .s-num  { color:#aaa; font-weight:700; width:30px; }
   .s-name { font-weight:700; }
-
-  @media(max-width:700px){
-    .main-grid { grid-template-columns:1fr; }
-    .stats-row { grid-template-columns:repeat(2,1fr); }
-  }
+  @media(max-width:700px){ .main-grid { grid-template-columns:1fr; } .stats-row { grid-template-columns:repeat(2,1fr); } }
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="header-left">
     <h1>🏫 O'quvchilar Enrollment Dashboard</h1>
     <p>2026-2027 o'quv yili · 4 filial · Live · Oxirgi yangilanish: <span id="lastUpdate">—</span></p>
   </div>
-  <button class="reload-btn" onclick="loadData()" id="reloadBtn">
-    <span>↻</span> Yangilash
-  </button>
+  <button class="reload-btn" onclick="loadData()" id="reloadBtn"><span>↻</span> Yangilash</button>
 </div>
-
 <div class="container">
   <div id="mainContent" style="display:none">
-
     <div class="info-banner">
       💡 <div><strong>Bekor qilish tizimi:</strong> O'quvchi o'qimaydi bo'lsa, <strong>Izoh</strong> ustuniga <code style="background:#fef3c7;padding:1px 5px;border-radius:4px">bekor</code> so'zini yozing — dashboard avtomatik chiqarib tashlaydi.</div>
     </div>
-
     <div class="filters">
       <div class="filter-group">
         <label>Filial</label>
@@ -174,8 +149,7 @@
             <option value="custom">O'zgacha...</option>
           </select>
           <input id="capCustom" type="number" min="1" max="300" value="24"
-            style="display:none;border:1.5px solid #4361ee;border-radius:8px;padding:7px 8px;font-size:13px;width:70px;outline:none;"
-            oninput="update()">
+            style="display:none;border:1.5px solid #4361ee;border-radius:8px;padding:7px 8px;font-size:13px;width:70px;outline:none;" oninput="update()">
         </div>
       </div>
       <div class="filter-group" id="capFixed" style="margin-left:auto;display:none">
@@ -183,52 +157,35 @@
         <div style="margin-top:2px" id="capFixedBadge"></div>
       </div>
     </div>
-
     <div class="stats-row">
       <div class="stat-card card-enrolled">
         <div class="stat-label">Jami o'quvchi</div>
-        <div class="stat-chart-wrap">
-          <canvas id="chartEnrolled"></canvas>
-          <div class="stat-center"><div class="big" id="valEnrolled" style="color:#4361ee">0</div><div class="small">kishi</div></div>
-        </div>
+        <div class="stat-chart-wrap"><canvas id="chartEnrolled"></canvas><div class="stat-center"><div class="big" id="valEnrolled" style="color:#4361ee">0</div><div class="small">kishi</div></div></div>
         <div class="stat-sub" id="subEnrolled">—</div>
       </div>
       <div class="stat-card card-yangi">
         <div class="stat-label">Yangi o'quvchi</div>
-        <div class="stat-chart-wrap">
-          <canvas id="chartYangi"></canvas>
-          <div class="stat-center"><div class="big" id="valYangi" style="color:#0891b2">0</div><div class="small">yangi</div></div>
-        </div>
+        <div class="stat-chart-wrap"><canvas id="chartYangi"></canvas><div class="stat-center"><div class="big" id="valYangi" style="color:#0891b2">0</div><div class="small">yangi</div></div></div>
         <div class="stat-sub" id="subYangi">—</div>
       </div>
       <div class="stat-card card-eski">
         <div class="stat-label">Eski o'quvchi</div>
-        <div class="stat-chart-wrap">
-          <canvas id="chartEski"></canvas>
-          <div class="stat-center"><div class="big" id="valEski" style="color:#6c5ce7">0</div><div class="small">eski</div></div>
-        </div>
+        <div class="stat-chart-wrap"><canvas id="chartEski"></canvas><div class="stat-center"><div class="big" id="valEski" style="color:#6c5ce7">0</div><div class="small">eski</div></div></div>
         <div class="stat-sub" id="subEski">—</div>
       </div>
       <div class="stat-card card-fill">
         <div class="stat-label">To'lganlik</div>
-        <div class="stat-chart-wrap">
-          <canvas id="chartFill"></canvas>
-          <div class="stat-center"><div class="big" id="valFill" style="color:#f77f00">0%</div><div class="small">foiz</div></div>
-        </div>
+        <div class="stat-chart-wrap"><canvas id="chartFill"></canvas><div class="stat-center"><div class="big" id="valFill" style="color:#f77f00">0%</div><div class="small">foiz</div></div></div>
         <div class="stat-sub" id="subFill">—</div>
       </div>
     </div>
-
     <div class="main-grid">
       <div class="card">
         <h2 id="classroomTitle">Sinf xonasi</h2>
         <div class="subtitle" id="classroomSubtitle">Filial va sinfni tanlang</div>
         <div id="overflowBox" style="display:none" class="overflow-box">
           <div class="ov-icon">⚠️</div>
-          <div>
-            <div class="ov-big" id="overflowMsg"></div>
-            <div class="ov-sub" id="overflowSub"></div>
-          </div>
+          <div><div class="ov-big" id="overflowMsg"></div><div class="ov-sub" id="overflowSub"></div></div>
         </div>
         <div id="classroomInfo" class="classroom-info"></div>
         <div id="seatGrid" class="seat-grid"></div>
@@ -246,70 +203,53 @@
         </table>
       </div>
     </div>
-
     <div class="card" style="margin-top:18px;">
       <h2>Sinflar bo'yicha to'lganlik</h2>
       <div class="subtitle" id="chipsSubtitle">Chipga bosing — filtr qo'llanadi · 🔴 ≥90% · 🟡 ≥50% · 🟢 &lt;50%</div>
       <div id="classChips" class="class-chips"></div>
     </div>
-
     <div class="card" id="studentListCard" style="margin-top:18px;display:none;">
       <h2 id="studentListTitle">O'quvchilar ro'yxati</h2>
       <div class="subtitle" id="studentListSubtitle"></div>
       <div id="studentListBody"></div>
     </div>
-
   </div>
-
-  <div id="loadingEl" class="loading-overlay">
-    <div class="spinner"></div>
-    <div>Ma'lumot yuklanmoqda (4 filial)...</div>
-  </div>
+  <div id="loadingEl" class="loading-overlay"><div class="spinner"></div><div>Ma'lumot yuklanmoqda (4 filial)...</div></div>
   <div id="errorEl" class="error-box" style="display:none"></div>
 </div>
-
 <script>
 const SHEET_ID = '1P-QqcLRI4G3Sx030SobDiwt7YyVDwhKz5vs4TaLCBJ4';
 
 const FILIAL_CONFIG = {
   'Yunusobod': {
     capacity: 394,
-    izohCol: 17,
-    sheet: 'Yunusobod filiali',
-    gid: null,
+    izohCol: 17, sheet: 'Yunusobod filiali', gid: null,
     sinfCapacity: { 7: 32, 8: 54, 9: 72, 10: 108, 11: 128 }
   },
   'Minor': {
-    capacity: 444,
-    izohCol: 17,
-    sheet: 'Minor filiali',
-    gid: null,
-    sinfCapacity: { 7: 64, 8: 96, 9: 98, 10: 110, 11: 76 }
+    capacity: 476,                           // 64+96+98+142+76
+    izohCol: 17, sheet: 'Minor filiali', gid: null,
+    sinfCapacity: { 7: 64, 8: 96, 9: 98, 10: 142, 11: 76 }
   },
   "Xalqlar do'stligi": {
     capacity: 144,
-    izohCol: 14,
-    sheet: "Xalqlar do'stligi filiali",
-    gid: '1621312429',
+    izohCol: 14, sheet: "Xalqlar do'stligi filiali", gid: '1621312429',
     sinfCapacity: { 9: 36, 10: 72, 11: 36 }
   },
   'Beruniy': {
     capacity: 100,
-    izohCol: 12,
-    sheet: 'Beruniy filiali',
-    gid: null,
+    izohCol: 12, sheet: 'Beruniy filiali', gid: null,
     sinfCapacity: { 9: 32, 10: 32, 11: 36 }
   },
 };
 
 const TOTAL_CAPACITY = Object.values(FILIAL_CONFIG).reduce((s, c) => s + c.capacity, 0);
+// 394 + 476 + 144 + 100 = 1114
 
 function csvUrl(cfg) {
-  if (cfg.gid)
-    return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${cfg.gid}`;
+  if (cfg.gid) return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${cfg.gid}`;
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(cfg.sheet)}`;
 }
-
 function getPredefinedCap(filial, sinf) {
   if (!filial || !sinf) return null;
   const sc = FILIAL_CONFIG[filial]?.sinfCapacity;
@@ -317,25 +257,19 @@ function getPredefinedCap(filial, sinf) {
   const v = sc[parseInt(sinf)];
   return v !== undefined ? v : null;
 }
-
 function getSeatCapacity() {
   const p = document.getElementById('capPreset');
   if (!p) return 24;
-  if (p.value === 'custom') {
-    const n = parseInt(document.getElementById('capCustom').value);
-    return isNaN(n) || n < 1 ? 24 : n;
-  }
+  if (p.value === 'custom') { const n = parseInt(document.getElementById('capCustom').value); return isNaN(n)||n<1?24:n; }
   return parseInt(p.value) || 24;
 }
-
 function onCapPreset() {
   const v = document.getElementById('capPreset').value;
   const el = document.getElementById('capCustom');
-  el.style.display = v === 'custom' ? 'inline-block' : 'none';
-  if (v === 'custom') el.focus();
+  el.style.display = v==='custom'?'inline-block':'none';
+  if (v==='custom') el.focus();
   update();
 }
-
 function getCapacity(filial, sinf) {
   const pre = getPredefinedCap(filial, sinf);
   if (pre !== null) return pre;
@@ -343,18 +277,12 @@ function getCapacity(filial, sinf) {
   if (filial) return FILIAL_CONFIG[filial]?.capacity || 0;
   return TOTAL_CAPACITY;
 }
-
 function getFilialCapForSinf(filialName, sinfF) {
   const cfg = FILIAL_CONFIG[filialName];
   if (!cfg) return 0;
-  if (sinfF) {
-    const sc = cfg.sinfCapacity?.[parseInt(sinfF)];
-    return sc !== undefined ? sc : cfg.capacity;
-  }
+  if (sinfF) { const sc = cfg.sinfCapacity?.[parseInt(sinfF)]; return sc !== undefined ? sc : cfg.capacity; }
   return cfg.capacity;
 }
-
-/* Chip rang chegarasi: ≥90% qizil, ≥50% sariq, <50% yashil */
 function chipClass(pct) {
   if (pct >= 90) return 'chip-full';
   if (pct >= 50) return 'chip-partial';
@@ -369,275 +297,173 @@ function parseCSV(text) {
   const rows = [];
   for (const line of text.split(/\r?\n/)) {
     if (!line.trim()) continue;
-    const cols = [];
-    let cur = '', inQ = false;
+    const cols = []; let cur='', inQ=false;
     for (const ch of line) {
-      if (ch === '"') inQ = !inQ;
-      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else cur += ch;
+      if (ch==='"') inQ=!inQ;
+      else if (ch===','&&!inQ){cols.push(cur.trim());cur='';}
+      else cur+=ch;
     }
-    cols.push(cur.trim());
-    rows.push(cols);
+    cols.push(cur.trim()); rows.push(cols);
   }
   return rows;
 }
-
-function isCancelled(izoh) {
-  return CANCEL_KEYWORDS.some(kw => (izoh || '').toLowerCase().includes(kw));
-}
+function isCancelled(izoh) { return CANCEL_KEYWORDS.some(kw=>(izoh||'').toLowerCase().includes(kw)); }
 
 async function loadData() {
   const btn = document.getElementById('reloadBtn');
   btn.classList.add('spinning');
-  document.getElementById('errorEl').style.display = 'none';
+  document.getElementById('errorEl').style.display='none';
   try {
-    const results = await Promise.all(
-      Object.entries(FILIAL_CONFIG).map(([filial, cfg]) =>
-        fetch(csvUrl(cfg))
-          .then(r => { if (!r.ok) throw new Error(`${filial}: HTTP ${r.status}`); return r.text(); })
-          .then(text => ({ filial, text, cfg }))
-      )
-    );
-    allStudents = [];
-    for (const { filial, text, cfg } of results) {
-      const rows = parseCSV(text);
-      for (let i = 1; i < rows.length; i++) {
-        const r   = rows[i];
-        const ism = (r[1] || '').trim();
-        if (!ism) continue;
-        const sinf = parseInt(r[2] || '');
-        if (isNaN(sinf)) continue;
-        const holat = (r[3] || '').trim();
-        if (isCancelled((r[cfg.izohCol] || '').toLowerCase())) continue;
-        allStudents.push({ filial, sinf, ism, holat });
+    const results = await Promise.all(Object.entries(FILIAL_CONFIG).map(([filial,cfg])=>
+      fetch(csvUrl(cfg)).then(r=>{if(!r.ok)throw new Error(`${filial}: HTTP ${r.status}`);return r.text();}).then(text=>({filial,text,cfg}))
+    ));
+    allStudents=[];
+    for (const {filial,text,cfg} of results) {
+      const rows=parseCSV(text);
+      for (let i=1;i<rows.length;i++) {
+        const r=rows[i]; const ism=(r[1]||'').trim(); if(!ism) continue;
+        const sinf=parseInt(r[2]||''); if(isNaN(sinf)) continue;
+        const holat=(r[3]||'').trim();
+        if(isCancelled((r[cfg.izohCol]||'').toLowerCase())) continue;
+        allStudents.push({filial,sinf,ism,holat});
       }
     }
-    document.getElementById('loadingEl').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-    if (!charts.enrolled) initCharts();
+    document.getElementById('loadingEl').style.display='none';
+    document.getElementById('mainContent').style.display='block';
+    if(!charts.enrolled) initCharts();
     update();
-    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('uz-UZ');
-  } catch (e) {
-    document.getElementById('loadingEl').style.display = 'none';
-    const errEl = document.getElementById('errorEl');
-    errEl.style.display = 'block';
-    errEl.innerHTML = `⚠️ Xatolik: ${e.message || e}<br><small>Google Sheets "Anyone with the link can view" bo'lishi kerak.</small>`;
+    document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('uz-UZ');
+  } catch(e) {
+    document.getElementById('loadingEl').style.display='none';
+    const errEl=document.getElementById('errorEl');
+    errEl.style.display='block';
+    errEl.innerHTML=`⚠️ Xatolik: ${e.message||e}<br><small>Google Sheets "Anyone with the link can view" bo'lishi kerak.</small>`;
   }
   btn.classList.remove('spinning');
 }
 
-const donutOpts = { cutout:'72%', plugins:{ legend:{display:false}, tooltip:{enabled:false} }, animation:{duration:400}, borderWidth:0 };
+const donutOpts={cutout:'72%',plugins:{legend:{display:false},tooltip:{enabled:false}},animation:{duration:400},borderWidth:0};
+function makeDonut(id,val,total,color,track){
+  return new Chart(document.getElementById(id).getContext('2d'),{type:'doughnut',data:{datasets:[{data:[val,Math.max(0,total-val)],backgroundColor:[color,track||'#f0f2f8']}]},options:{...donutOpts}});
+}
+function initCharts(){
+  charts.enrolled=makeDonut('chartEnrolled',0,1,'#4361ee','#e8eaff');
+  charts.yangi=makeDonut('chartYangi',0,1,'#0891b2','#e0f2fe');
+  charts.eski=makeDonut('chartEski',0,1,'#6c5ce7','#ede9fe');
+  charts.fill=makeDonut('chartFill',0,100,'#f77f00','#fff3e0');
+}
+function updChart(chart,val,total){chart.data.datasets[0].data=[val,Math.max(0,total-val)];chart.update();}
 
-function makeDonut(id, val, total, color, track) {
-  return new Chart(document.getElementById(id).getContext('2d'), {
-    type: 'doughnut',
-    data: { datasets: [{ data: [val, Math.max(0, total - val)], backgroundColor: [color, track || '#f0f2f8'] }] },
-    options: { ...donutOpts }
-  });
-}
-function initCharts() {
-  charts.enrolled = makeDonut('chartEnrolled', 0, 1,   '#4361ee', '#e8eaff');
-  charts.yangi     = makeDonut('chartYangi',   0, 1,   '#0891b2', '#e0f2fe');
-  charts.eski      = makeDonut('chartEski',    0, 1,   '#6c5ce7', '#ede9fe');
-  charts.fill      = makeDonut('chartFill',    0, 100, '#f77f00', '#fff3e0');
-}
-function updChart(chart, val, total) {
-  chart.data.datasets[0].data = [val, Math.max(0, total - val)];
-  chart.update();
+function getFiltered(filial,sinf,holat){
+  return allStudents.filter(s=>(!filial||s.filial===filial)&&(!sinf||s.sinf===parseInt(sinf))&&(!holat||s.holat===holat));
 }
 
-function getFiltered(filial, sinf, holat) {
-  return allStudents.filter(s =>
-    (!filial || s.filial === filial) &&
-    (!sinf   || s.sinf  === parseInt(sinf)) &&
-    (!holat  || s.holat === holat)
-  );
+function update(){
+  const filial=document.getElementById('filialFilter').value;
+  const sinf=document.getElementById('sinfFilter').value;
+  const holat=document.getElementById('holatFilter').value;
+  const pre=getPredefinedCap(filial,sinf);
+  document.getElementById('capGroup').style.display=pre!==null?'none':'flex';
+  document.getElementById('capFixed').style.display=pre!==null?'flex':'none';
+  if(pre!==null) document.getElementById('capFixedBadge').innerHTML=`<span class="cap-preset-badge">📐 ${pre} o'rin (belgilangan)</span>`;
+  const filtered=getFiltered(filial,sinf,holat);
+  const enrolled=filtered.length;
+  const yangiCnt=filtered.filter(s=>s.holat==='Yangi').length;
+  const eskiCnt=filtered.filter(s=>s.holat==='Eski').length;
+  const capacity=getCapacity(filial,sinf);
+  const pct=capacity>0?Math.round(enrolled/capacity*100):0;
+  document.getElementById('valEnrolled').textContent=enrolled;
+  document.getElementById('valYangi').textContent=yangiCnt;
+  document.getElementById('valEski').textContent=eskiCnt;
+  document.getElementById('valFill').textContent=pct+'%';
+  document.getElementById('subEnrolled').textContent=`${pct}% band`;
+  document.getElementById('subYangi').textContent=enrolled>0?`${Math.round(yangiCnt/enrolled*100)}% yangi`:'—';
+  document.getElementById('subEski').textContent=enrolled>0?`${Math.round(eskiCnt/enrolled*100)}% eski`:'—';
+  document.getElementById('subFill').textContent=pct>=80?"🔴 Deyarli to'ldi":pct>=50?"🟡 Yarim to'lgan":'🟢 Ochiq';
+  updChart(charts.enrolled,enrolled,capacity);
+  updChart(charts.yangi,yangiCnt,Math.max(enrolled,1));
+  updChart(charts.eski,eskiCnt,Math.max(enrolled,1));
+  updChart(charts.fill,pct,100);
+  renderClassroom(filial,sinf,enrolled);
+  renderFilialTable(sinf,holat);
+  renderChips(filial,sinf,holat);
+  renderStudentList(filial,sinf,holat);
 }
 
-function update() {
-  const filial = document.getElementById('filialFilter').value;
-  const sinf   = document.getElementById('sinfFilter').value;
-  const holat  = document.getElementById('holatFilter').value;
-
-  const pre = getPredefinedCap(filial, sinf);
-  document.getElementById('capGroup').style.display = pre !== null ? 'none' : 'flex';
-  document.getElementById('capFixed').style.display = pre !== null ? 'flex' : 'none';
-  if (pre !== null)
-    document.getElementById('capFixedBadge').innerHTML =
-      `<span class="cap-preset-badge">📐 ${pre} o'rin (belgilangan)</span>`;
-
-  const filtered = getFiltered(filial, sinf, holat);
-  const enrolled = filtered.length;
-  const yangiCnt = filtered.filter(s => s.holat === 'Yangi').length;
-  const eskiCnt  = filtered.filter(s => s.holat === 'Eski').length;
-  const capacity = getCapacity(filial, sinf);
-  const pct      = capacity > 0 ? Math.round(enrolled / capacity * 100) : 0;
-
-  document.getElementById('valEnrolled').textContent = enrolled;
-  document.getElementById('valYangi').textContent    = yangiCnt;
-  document.getElementById('valEski').textContent     = eskiCnt;
-  document.getElementById('valFill').textContent     = pct + '%';
-  document.getElementById('subEnrolled').textContent = `${pct}% band`;
-  document.getElementById('subYangi').textContent    = enrolled > 0 ? `${Math.round(yangiCnt/enrolled*100)}% yangi` : '—';
-  document.getElementById('subEski').textContent     = enrolled > 0 ? `${Math.round(eskiCnt/enrolled*100)}% eski` : '—';
-  document.getElementById('subFill').textContent     = pct >= 80 ? "🔴 Deyarli to'ldi" : pct >= 50 ? "🟡 Yarim to'lgan" : '🟢 Ochiq';
-
-  updChart(charts.enrolled, enrolled, capacity);
-  updChart(charts.yangi,    yangiCnt, Math.max(enrolled, 1));
-  updChart(charts.eski,     eskiCnt,  Math.max(enrolled, 1));
-  updChart(charts.fill,     pct,      100);
-
-  renderClassroom(filial, sinf, enrolled);
-  renderFilialTable(sinf, holat);
-  renderChips(filial, sinf, holat);
-  renderStudentList(filial, sinf, holat);
-}
-
-function renderClassroom(filial, sinf, enrolled) {
-  const titleEl = document.getElementById('classroomTitle');
-  const subEl   = document.getElementById('classroomSubtitle');
-  const infoEl  = document.getElementById('classroomInfo');
-  const gridEl  = document.getElementById('seatGrid');
-  const ovBox   = document.getElementById('overflowBox');
-
-  if (!filial || !sinf) {
-    titleEl.textContent = 'Sinf xonasi';
-    subEl.textContent   = "Aniq ko'rish uchun filial + sinfni tanlang";
-    infoEl.innerHTML = '';
-    gridEl.innerHTML = '<div class="no-data">📚 Filial va sinfni tanlang</div>';
-    ovBox.style.display = 'none';
-    return;
+function renderClassroom(filial,sinf,enrolled){
+  const titleEl=document.getElementById('classroomTitle');
+  const subEl=document.getElementById('classroomSubtitle');
+  const infoEl=document.getElementById('classroomInfo');
+  const gridEl=document.getElementById('seatGrid');
+  const ovBox=document.getElementById('overflowBox');
+  if(!filial||!sinf){
+    titleEl.textContent='Sinf xonasi'; subEl.textContent="Aniq ko'rish uchun filial + sinfni tanlang";
+    infoEl.innerHTML=''; gridEl.innerHTML='<div class="no-data">📚 Filial va sinfni tanlang</div>'; ovBox.style.display='none'; return;
   }
-
-  const cap      = getCapacity(filial, sinf);
-  const overflow = Math.max(0, enrolled - cap);
-  const seated   = Math.min(enrolled, cap);
-  const free     = Math.max(0, cap - enrolled);
-  const isFull   = enrolled >= cap;
-  const isPre    = getPredefinedCap(filial, sinf) !== null;
-
-  titleEl.textContent = `${filial} · ${sinf}-sinf`;
-  subEl.textContent   = `${cap} o'rinli sinf xonasi${isPre ? " (belgilangan sig'im)" : ''}`;
-
-  ovBox.style.display = overflow > 0 ? 'flex' : 'none';
-  if (overflow > 0) {
-    document.getElementById('overflowMsg').textContent = `${overflow} ta bolaga joy yo'q!`;
-    document.getElementById('overflowSub').textContent = `Sinf ${cap} ta o'ringa mo'ljallangan, ammo ${enrolled} ta bola ro'yxatda.`;
+  const cap=getCapacity(filial,sinf); const overflow=Math.max(0,enrolled-cap);
+  const seated=Math.min(enrolled,cap); const free=Math.max(0,cap-enrolled);
+  const isFull=enrolled>=cap; const isPre=getPredefinedCap(filial,sinf)!==null;
+  titleEl.textContent=`${filial} · ${sinf}-sinf`;
+  subEl.textContent=`${cap} o'rinli sinf xonasi${isPre?" (belgilangan sig'im)":''}`;
+  ovBox.style.display=overflow>0?'flex':'none';
+  if(overflow>0){
+    document.getElementById('overflowMsg').textContent=`${overflow} ta bolaga joy yo'q!`;
+    document.getElementById('overflowSub').textContent=`Sinf ${cap} ta o'ringa mo'ljallangan, ammo ${enrolled} ta bola ro'yxatda.`;
   }
-
-  infoEl.innerHTML = `
-    <span class="ci-badge ci-enrolled">🔴 ${enrolled} band</span>
-    ${overflow > 0
-      ? `<span class="ci-badge" style="background:#fff3cd;color:#856404">⚠️ +${overflow} oshib ketdi</span>`
-      : `<span class="ci-badge ci-free">🟢 ${free} bo'sh</span>`}
-    <span class="ci-status ${isFull ? 'status-full' : 'status-open'}">${isFull ? "🔒 TO'LDI" : '✅ OCHIQ'}</span>`;
-
-  let html = '';
-  for (let i = 1; i <= cap; i++)
-    html += `<div class="seat ${i <= seated ? 'occupied' : 'free'}">${i}</div>`;
-  gridEl.innerHTML = html;
+  infoEl.innerHTML=`<span class="ci-badge ci-enrolled">🔴 ${enrolled} band</span>${overflow>0?`<span class="ci-badge" style="background:#fff3cd;color:#856404">⚠️ +${overflow} oshib ketdi</span>`:`<span class="ci-badge ci-free">🟢 ${free} bo'sh</span>`}<span class="ci-status ${isFull?'status-full':'status-open'}">${isFull?"🔒 TO'LDI":'✅ OCHIQ'}</span>`;
+  let html='';
+  for(let i=1;i<=cap;i++) html+=`<div class="seat ${i<=seated?'occupied':'free'}">${i}</div>`;
+  gridEl.innerHTML=html;
 }
 
-function renderFilialTable(sinfF, holatF) {
-  let html = '';
-  for (const [f] of Object.entries(FILIAL_CONFIG)) {
-    const n   = getFiltered(f, sinfF, holatF).length;
-    const cap = getFilialCapForSinf(f, sinfF);
-    const fr  = Math.max(0, cap - n);
-    const pct = cap > 0 ? Math.round(n / cap * 100) : 0;
-    html += `<tr>
-      <td class="filial-name">${f}</td>
-      <td style="font-weight:700;color:#4361ee">${n}</td>
-      <td style="font-weight:700;color:#06a87e">${fr}</td>
-      <td><span class="badge ${pct >= 90 ? 'badge-full' : 'badge-open'}">${pct >= 90 ? "To'ldi" : 'Ochiq'}</span></td>
-      <td><div style="display:flex;align-items:center;gap:6px">
-        <div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pct,100)}%"></div></div>
-        <span style="font-size:12px;color:#888">${pct}%</span>
-      </div></td>
-    </tr>`;
+function renderFilialTable(sinfF,holatF){
+  let html='';
+  for(const [f] of Object.entries(FILIAL_CONFIG)){
+    const n=getFiltered(f,sinfF,holatF).length; const cap=getFilialCapForSinf(f,sinfF);
+    const fr=Math.max(0,cap-n); const pct=cap>0?Math.round(n/cap*100):0;
+    html+=`<tr><td class="filial-name">${f}</td><td style="font-weight:700;color:#4361ee">${n}</td><td style="font-weight:700;color:#06a87e">${fr}</td><td><span class="badge ${pct>=90?'badge-full':'badge-open'}">${pct>=90?"To'ldi":'Ochiq'}</span></td><td><div style="display:flex;align-items:center;gap:6px"><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pct,100)}%"></div></div><span style="font-size:12px;color:#888">${pct}%</span></div></td></tr>`;
   }
-  document.getElementById('filialBody').innerHTML = html;
+  document.getElementById('filialBody').innerHTML=html;
 }
 
-function renderChips(filialF, sinfF, holatF) {
-  const wrap  = document.getElementById('classChips');
-  const subEl = document.getElementById('chipsSubtitle');
-  const combos = {};
-
-  allStudents.forEach(s => {
-    if (filialF && s.filial !== filialF) return;
-    if (sinfF   && s.sinf  !== parseInt(sinfF)) return;
-    if (holatF  && s.holat !== holatF) return;
-    const k = `${s.filial}|${s.sinf}`;
-    if (!combos[k]) combos[k] = { filial: s.filial, sinf: s.sinf, count: 0, yangi: 0, eski: 0 };
+function renderChips(filialF,sinfF,holatF){
+  const wrap=document.getElementById('classChips'); const subEl=document.getElementById('chipsSubtitle');
+  const combos={};
+  allStudents.forEach(s=>{
+    if(filialF&&s.filial!==filialF) return; if(sinfF&&s.sinf!==parseInt(sinfF)) return; if(holatF&&s.holat!==holatF) return;
+    const k=`${s.filial}|${s.sinf}`;
+    if(!combos[k]) combos[k]={filial:s.filial,sinf:s.sinf,count:0,yangi:0,eski:0};
     combos[k].count++;
-    if (s.holat === 'Yangi') combos[k].yangi++;
-    else if (s.holat === 'Eski') combos[k].eski++;
+    if(s.holat==='Yangi') combos[k].yangi++; else if(s.holat==='Eski') combos[k].eski++;
   });
-
-  const keys = Object.keys(combos).sort((a, b) => {
-    const ca = combos[a], cb = combos[b];
-    return ca.filial !== cb.filial ? ca.filial.localeCompare(cb.filial) : ca.sinf - cb.sinf;
-  });
-
-  subEl.textContent = `${keys.length} ta kombinatsiya · chipga bosing · 🔴 ≥90% · 🟡 ≥50% · 🟢 <50%`;
-  if (!keys.length) { wrap.innerHTML = '<span style="color:#aaa;font-size:13px">Hech narsa topilmadi</span>'; return; }
-
-  wrap.innerHTML = keys.map(k => {
-    const c    = combos[k];
-    const pre  = getPredefinedCap(c.filial, c.sinf);
-    const cap2 = pre !== null ? pre : getSeatCapacity();
-    const pct  = Math.round(c.count / cap2 * 100);
-    const cls  = chipClass(pct);   // ≥90 qizil, ≥50 sariq, <50 yashil
-    const ov   = c.count > cap2 ? ` ⚠️+${c.count - cap2}` : '';
-    return `<div class="chip ${cls}" onclick="selectCombo('${c.filial}','${c.sinf}')">
-      ${c.filial} · ${c.sinf}-sinf — ${c.count}/${cap2}${ov}
-      <span style="opacity:.7;font-size:10px;margin-left:4px">🟢${c.yangi} 🔵${c.eski}</span>
-    </div>`;
+  const keys=Object.keys(combos).sort((a,b)=>{const ca=combos[a],cb=combos[b];return ca.filial!==cb.filial?ca.filial.localeCompare(cb.filial):ca.sinf-cb.sinf;});
+  subEl.textContent=`${keys.length} ta kombinatsiya · chipga bosing · 🔴 ≥90% · 🟡 ≥50% · 🟢 <50%`;
+  if(!keys.length){wrap.innerHTML='<span style="color:#aaa;font-size:13px">Hech narsa topilmadi</span>';return;}
+  wrap.innerHTML=keys.map(k=>{
+    const c=combos[k]; const pre=getPredefinedCap(c.filial,c.sinf); const cap2=pre!==null?pre:getSeatCapacity();
+    const pct=Math.round(c.count/cap2*100); const cls=chipClass(pct); const ov=c.count>cap2?` ⚠️+${c.count-cap2}`:'';
+    return `<div class="chip ${cls}" onclick="selectCombo('${c.filial}','${c.sinf}')">${c.filial} · ${c.sinf}-sinf — ${c.count}/${cap2}${ov}<span style="opacity:.7;font-size:10px;margin-left:4px">🟢${c.yangi} 🔵${c.eski}</span></div>`;
   }).join('');
 }
 
-function renderStudentList(filial, sinf, holat) {
-  const card    = document.getElementById('studentListCard');
-  const titleEl = document.getElementById('studentListTitle');
-  const subEl   = document.getElementById('studentListSubtitle');
-  const bodyEl  = document.getElementById('studentListBody');
-
-  if (!filial || !sinf) { card.style.display = 'none'; return; }
-
-  const students = getFiltered(filial, sinf, holat);
-  card.style.display  = 'block';
-  titleEl.textContent = `${filial} · ${sinf}-sinf${holat ? ' · ' + holat : ''} — O'quvchilar ro'yxati`;
-  subEl.textContent   = `Jami ${students.length} ta o'quvchi`;
-
-  if (!students.length) {
-    bodyEl.innerHTML = "<div class='no-data'>Hech qanday o'quvchi topilmadi</div>";
-    return;
-  }
-
-  bodyEl.innerHTML = `
-    <table class="student-table">
-      <thead><tr><th>#</th><th>Ism-familiya</th><th>Holat</th></tr></thead>
-      <tbody>${students.map((s, i) => `
-        <tr>
-          <td class="s-num">${i + 1}</td>
-          <td class="s-name">${s.ism}</td>
-          <td>${s.holat === 'Yangi'
-            ? '<span class="holat-yangi">Yangi</span>'
-            : s.holat === 'Eski'
-              ? '<span class="holat-eski">Eski</span>'
-              : `<span class="holat-unknown">${s.holat || '—'}</span>`
-          }</td>
-        </tr>`).join('')}
-      </tbody>
-    </table>`;
+function renderStudentList(filial,sinf,holat){
+  const card=document.getElementById('studentListCard');
+  const titleEl=document.getElementById('studentListTitle');
+  const subEl=document.getElementById('studentListSubtitle');
+  const bodyEl=document.getElementById('studentListBody');
+  if(!filial||!sinf){card.style.display='none';return;}
+  const students=getFiltered(filial,sinf,holat);
+  card.style.display='block';
+  titleEl.textContent=`${filial} · ${sinf}-sinf${holat?' · '+holat:''} — O'quvchilar ro'yxati`;
+  subEl.textContent=`Jami ${students.length} ta o'quvchi`;
+  if(!students.length){bodyEl.innerHTML="<div class='no-data'>Hech qanday o'quvchi topilmadi</div>";return;}
+  bodyEl.innerHTML=`<table class="student-table"><thead><tr><th>#</th><th>Ism-familiya</th><th>Holat</th></tr></thead><tbody>${students.map((s,i)=>`<tr><td class="s-num">${i+1}</td><td class="s-name">${s.ism}</td><td>${s.holat==='Yangi'?'<span class="holat-yangi">Yangi</span>':s.holat==='Eski'?'<span class="holat-eski">Eski</span>':`<span class="holat-unknown">${s.holat||'—'}</span>`}</td></tr>`).join('')}</tbody></table>`;
 }
 
-function selectCombo(filial, sinf) {
-  document.getElementById('filialFilter').value = filial;
-  document.getElementById('sinfFilter').value   = sinf;
-  update();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function selectCombo(filial,sinf){
+  document.getElementById('filialFilter').value=filial;
+  document.getElementById('sinfFilter').value=sinf;
+  update(); window.scrollTo({top:0,behavior:'smooth'});
 }
 
 loadData();
